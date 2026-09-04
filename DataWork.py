@@ -6,9 +6,10 @@ import pandas as pd
 from pathlib import Path
 
 Path('datas').mkdir(exist_ok=True)
+Path('system').mkdir(exist_ok=True)
 
-DATE_OF_DAY = datetime.datetime.today()
-
+DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
+print(DATE_OF_DAY)
 
 def erro_logger(e, location):
 
@@ -19,7 +20,7 @@ def erro_logger(e, location):
         'location':  location
     }
 
-    with open('datas/error_logging.jsonl', 'a', encoding='utf-8') as f:
+    with open('system/error_logging.jsonl', 'a', encoding='utf-8') as f:
         json.dump(data, f,  ensure_ascii=False, indent=4 )
 
 def proces_logger(mesagge : str, location : str):
@@ -31,7 +32,7 @@ def proces_logger(mesagge : str, location : str):
 
     }
 
-    with open('datas/proces_logging.jsonl', 'a', encoding='utf-8') as f:
+    with open('system/proces_logging.jsonl', 'a', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
