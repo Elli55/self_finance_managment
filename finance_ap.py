@@ -2,15 +2,42 @@ import streamlit as st
 import pandas as pd
 import functions
 import DataWork
-
+import calculation
 
 
 
 st.set_page_config(page_title='Finance Tracker', page_icon='💵', layout='wide')
 
+if 'page' not in st.session_state:
+    st.session_state.page = functions.PAGE_NAMES[0]
+
+
+
+
 with st.sidebar:
     st.title('Sections')
-    page = st.radio('',functions.PAGE_NAMES)
+    st.divider()
+
+    for page_name in functions.PAGE_NAMES:
+        is_active = st.session_state.page == page_name
+            
+        if st.button(
+                    page_name,
+                    use_container_width=True,
+                    type="primary" if is_active else "secondary"
+                    ):
+                    
+                    st.session_state.page = page_name
+                    st.rerun()
+
+
+page = st.session_state.page
+if page == functions.PAGE_NAMES[0]:
+    col1, col2, col3 = st.columns(3, gap='xxsmall')
+
+    col1.metric('Balance', calculation.BALANCE, calculation.delta_for_balance, format='euro', border=True, width='content')
+    col2.metric('This month Income', calculation.sum_this_month_income, calculation.delta_for_income, format='euro', border=True, width='content')    
+    col3.metric('This month expenses', calculation.sum_this_month_expenses, calculation.delta_for_expenses, format='euro', border=True, width='content')
 
 
 if page == functions.PAGE_NAMES[1]:

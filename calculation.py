@@ -10,19 +10,44 @@ with sq.connect('datas/finance.db') as connection:
 
 
     sum_this_month_expenses = pd.read_sql('''SELECT SUM(amount) FROM Expenses
-                                        WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''',connection).iloc[0,0]
+                                        WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''',
+                                        connection).iloc[0,0].round(2)
 
-    print(f'This mons expenses: {sum_this_month_expenses}')
+    df_last_month_expenses = pd.read_sql('''
+
+                            SELECT AVG(amount) as avg_amount FROM Expenses
+                            WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now', '-1 month')
+
+                        ''', connection)
+    last_month_expenses = df_last_month_expenses['avg_amount'].iloc[0].round(2) if not df_last_month_expenses.empty else 0
+
+    delta_for_expenses = (100 - (last_month_expenses / sum_this_month_expenses * 100)).round(2)
+
+
+
+   
 
 
     #income 
 
     df_income = pd.read_sql('SELECT * FROM Income', connection)
-    print(df_income)
-    sum_this_month_income = pd.read_sql('''SELECT SUM(amount) FROM Income
-                                        WHERE strftime('%Y-%m', date) = strftime('&Y-%m', 'now') ''', connection).iloc[0,0]
 
-    print(f'sum of this month income : {sum_this_month_income}')
+    sum_this_month_income = pd.read_sql('''SELECT SUM(amount) FROM Income
+                                        WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ''', connection).iloc[0,0]
+
+    df_last_month_income = pd.read_sql('''
+
+                            SELECT AVG(amount) as avg_amount FROM Income
+                            WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now', '-1 month')
+
+                    ''', connection)
+
+
+    last_month_income = df_last_month_income['avg_amount'].iloc[0].round(2) if not df_last_month_income.empty else 0 
+
+    delta_for_income =(100 - (last_month_income / sum_this_month_income * 100)).round(2)
+
+
 
     #balance
 
@@ -32,7 +57,7 @@ with sq.connect('datas/finance.db') as connection:
 
                     ''', connection)
 
-    BALANCE = df_balance['balance'].iloc[0] if not df_balance.empty else 0
+    BALANCE = df_balance['balance'].iloc[0].round(2) if not df_balance.empty else 0
 
     df_last_month_balance = pd.read_sql('''SELECT avg(balance) as avg_balance FROM Balance 
 
@@ -40,7 +65,7 @@ with sq.connect('datas/finance.db') as connection:
 
                 ''', connection)
 
-    LAST_MONTH_BALANCE = df_last_month_balance['avg_balance'].iloc[0] if not df_last_month_balance.empty else 0
+    last_month_balance = df_last_month_balance['avg_balance'].iloc[0].round(2) if not df_last_month_balance.empty else 0
 
-    DELTA_FOR_BALANCE = LAST_MONTH_BALANCE / BALANCE * 100
+    delta_for_balance = (100 - (last_month_balance / BALANCE * 100)).round(2)
 
