@@ -6,10 +6,18 @@ import calculation
 
 
 
-st.set_page_config(page_title='Finance Tracker', page_icon='💵', layout='wide')
+try:
 
-if 'page' not in st.session_state:
-    st.session_state.page = functions.PAGE_NAMES[0]
+    st.markdown(functions.load_css(), unsafe_allow_html=True)
+
+
+
+    st.set_page_config(page_title='Finance Tracker', page_icon='💵', layout='wide')
+
+    if 'page' not in st.session_state:
+        st.session_state.page = functions.PAGE_NAMES[0]
+except Exception as e:
+    DataWork        
 
 
 
@@ -32,12 +40,43 @@ with st.sidebar:
 
 
 page = st.session_state.page
+
+
 if page == functions.PAGE_NAMES[0]:
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
-    col1.metric('Balance', calculation.BALANCE, calculation.delta_for_balance, format='euro', border=True, width='content')
-    col2.metric('This month Income', calculation.sum_this_month_income, calculation.delta_for_income, format='euro', border=True, width='content')    
-    col3.metric('This month expenses', calculation.sum_this_month_expenses, calculation.delta_for_expenses, format='euro', border=True, width='content')
+
+    with col1:
+
+        st.markdown(functions.generate_metric_card('Balance',
+                                                    calculation.BALANCE,
+                                                      calculation.delta_for_balance,
+                                                      '%',
+                                                        True),
+                                                          unsafe_allow_html=True)
+
+        
+    with col2:
+
+        st.markdown(functions.generate_metric_card('This month Income',
+                                                    calculation.sum_this_month_income,
+                                                      calculation.delta_for_income,
+                                                        '%',
+                                                        True), 
+                                                        unsafe_allow_html=True)
+
+    with col3:
+
+        st.markdown(functions.generate_metric_card('This month Expenses',
+                                                   calculation.sum_this_month_expenses,
+                                                     calculation.delta_for_expenses,
+                                                      '%',
+                                                       False ),
+                                                       unsafe_allow_html=True)
+
+        
+
+
 
 
 if page == functions.PAGE_NAMES[1]:

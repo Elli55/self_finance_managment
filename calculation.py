@@ -23,6 +23,10 @@ with sq.connect('datas/finance.db') as connection:
 
     delta_for_expenses = (100 - (last_month_expenses / sum_this_month_expenses * 100)).round(2)
 
+    def sum__month_expenses(month):
+            pd.read_sql(f'''SELECT SUM(amount) FROM Expenses
+                                        where strftime('%Y-%m', date) = strftime('%Y-%m', {month})''',connection).iloc[0,0]
+
 
 
    
@@ -68,4 +72,6 @@ with sq.connect('datas/finance.db') as connection:
     last_month_balance = df_last_month_balance['avg_balance'].iloc[0].round(2) if not df_last_month_balance.empty else 0
 
     delta_for_balance = (100 - (last_month_balance / BALANCE * 100)).round(2)
+
+    
 
