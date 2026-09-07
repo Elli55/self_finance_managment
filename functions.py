@@ -72,26 +72,35 @@ def load_css():
 
 def generate_metric_card(titel : str, value : float, delta: float, delta_sign : str,  ineverse : bool = False):
 
-    if delta:
+   try:
+        
+
+        delta_title = '▲' if delta > 0 else '▼'
 
         if ineverse is False:
-            delt_class = 'delta_positive' if delta  < 0 else 'delta_negative'
+            background_colour = 'background_positive' if value <= 0 else 'background_negative' 
+            font_colour = 'font_positive' if value <= 0 else 'font_negative' 
+
         else:
-            delt_class = 'delta_positive' if delta  > 0 else 'delta_negative'
-        delta_html = f"<p class='{delt_class}'> {delta} {delta_sign} </p>"
-
-    else:
-        delta_html = ''
+            
+            background_colour = 'background_positive' if value > 0 else 'background_negative' 
+            font_colour = 'font_positive' if value > 0 else 'font_negative' 
 
 
-    return  f'''<section class='metric_card'>
+        proces_logger(f'for {titel} the metric card generated','functions/generate_metric_card')
+
+
+        return  f'''<section class='metric_card {background_colour}'>
             <p class='title_of_matric_card'> {titel} </p>
-            <h2 class='value_of_metric_card'> {value} </h2>
-            {delta_html}
+            <h2 class='value_of_metric_card {font_colour}'> {value} </h2>
+            <p class='delta_of_metric_card'> {delta_title} {delta} {delta_sign} </p>
             </section>
             '''    
+        
+   except Exception as e:
+       erro_logger(e, 'functions/generate_matric_card')
 
-
+ 
 
     
 

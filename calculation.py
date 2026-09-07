@@ -6,7 +6,15 @@ with sq.connect('datas/finance.db') as connection:
 
     #expenses 
 
-    df_expenses = pd.read_sql('SELECT * FROM Expenses', connection)
+    def load_expenses_df():
+        return pd.read_sql('SELECT * FROM Expenses', connection)
+
+    def group_by_the_category_expenses_sum():
+        df = pd.read_sql('SELECT * FROM Expenses', connection)
+        df_grouped_with_cat = df.groupby(by='category')['amount'].sum().sort_values(ascending=False).reset_index()
+
+        return df_grouped_with_cat
+
 
 
     sum_this_month_expenses = pd.read_sql('''SELECT SUM(amount) FROM Expenses

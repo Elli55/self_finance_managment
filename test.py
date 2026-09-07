@@ -20,5 +20,7 @@ connection = sq.connect('datas/finance.db')
 
 
 
-print(calculation.last_month_income)
+# print(calculation.last_month_income)
+
+print(calculation.group_by_the_category_expenses_sum())
 

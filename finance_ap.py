@@ -3,6 +3,7 @@ import pandas as pd
 import functions
 import DataWork
 import calculation
+import graphics as gp
 
 
 
@@ -17,7 +18,7 @@ try:
     if 'page' not in st.session_state:
         st.session_state.page = functions.PAGE_NAMES[0]
 except Exception as e:
-    DataWork        
+    functions.erro_logger(e, 'finance_ap.py/start')        
 
 
 
@@ -58,7 +59,7 @@ if page == functions.PAGE_NAMES[0]:
         
     with col2:
 
-        st.markdown(functions.generate_metric_card('This month Income',
+        st.markdown(functions.generate_metric_card('Income',
                                                     calculation.sum_this_month_income,
                                                       calculation.delta_for_income,
                                                         '%',
@@ -67,14 +68,15 @@ if page == functions.PAGE_NAMES[0]:
 
     with col3:
 
-        st.markdown(functions.generate_metric_card('This month Expenses',
+        st.markdown(functions.generate_metric_card('Expenses',
                                                    calculation.sum_this_month_expenses,
                                                      calculation.delta_for_expenses,
                                                       '%',
                                                        False ),
                                                        unsafe_allow_html=True)
 
-        
+
+    st.plotly_chart(gp.generate_graphic_for_expenses_groupby_category(),  width='stretch')
 
 
 

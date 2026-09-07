@@ -1,9 +1,53 @@
+/* global */
 
+
+.background_positive{
+    background-color: rgb(3, 174, 3, 0.1);
+}
+
+.background_negative{
+    background-color: rgb(255, 25, 0, 0.1);
+}
+
+.font_positive{
+    color: rgb(3, 174, 3) !important;
+}
+.font_negative{
+    color:rgb(255, 25, 0) !important;
+}
 
 
 
 /* for metrics */
 
 .metric_card{
-    border: solid;
+    display: block;
+    text-align: center;
+    border: 0.3rem solid rgba(5, 73, 4);
+    border-radius: 8%;
+    margin: 0 7rem;
+    
+}
+
+
+
+.title_of_matric_card{
+    font-size: 2rem !important;
+    color: #865506;
+    font-weight: 900;
+    text-transform: uppercase;
+    
+    padding-top: 1rem;
+  
+
+}
+
+.value_of_metric_card{
+    font-size: 3rem !important;
+    font-weight: 600;
+}
+
+.delta_of_metric_card{
+    color: #5d5b58;
+    
 }
