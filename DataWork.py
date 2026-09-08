@@ -8,7 +8,7 @@ def write_expenses(expense, amount, category, note):
 
 
     try:
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
             corsor = db.cursor()
 
             corsor.execute('''
@@ -38,7 +38,7 @@ def write_income(source,  amount, note):
 
     try:
 
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
 
             corsor = db.cursor()
 
@@ -69,7 +69,7 @@ def write_work_hours(name_of_company : str, date_of_work, count_of_hours, salary
     
 
     try:
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
             corsor = db.cursor()
 
             corsor.execute(f'''
@@ -99,7 +99,7 @@ def payed_from_works( work_place :str ,start_date, end_date):
 
     try:
 
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
 
             corsor = db.cursor()
 
@@ -128,7 +128,7 @@ def write_debits(name, amount, deadline):
 
     try:    
 
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
 
             corsor = db.cursor()
 
@@ -139,14 +139,15 @@ def write_debits(name, amount, deadline):
                 name TEXT,
                 amount REAL,
                 deadline TEXT,
+                status TEXT,
                 added_date TEXT)
 
                 ''')
 
             corsor.execute(f'''
 
-                INSERT INTO Debits(name, amount, deadline, added_date)
-                Values(?,?,?,?)''',(name, amount,  deadline, functions.DATE_OF_DAY)
+                INSERT INTO Debits(name, amount, deadline, status, added_date)
+                Values(?,?,?,?,?)''',(name, amount,  deadline, 0, functions.DATE_OF_DAY)
 
                 )
 
@@ -156,13 +157,30 @@ def write_debits(name, amount, deadline):
         functions.erro_logger(e, 'DataWork/write_debits')
 
 
-        
+def change_debit_status(iid):
+
+    try:
+        with sq.connect('Datas/finance.db', check_same_thread=False) as db:
+
+            corsor = db.cursor()
+
+            corsor.execute(f'''
+
+                    UPDATE Debits
+                    SET status = 1
+                    WHERE id = {iid} 
+
+                    ''')
+            
+            functions.proces_logger(f'for {iid} of debit status changed', 'functions/change_debit_status')
+    except Exception as e:
+        functions.erro_logger(e, 'functions/change_debit_status')            
 
 
 def update_balance():
 
     try:
-        with sq.connect('datas/finance.db') as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
 
             sum_of_expenses = pd.read_sql('SELECT SUM(amount) FROM Expenses', db).iloc[0, 0]
             sum_of_income = pd.read_sql('SELECT SUM(amount) FROM Income', db).iloc[0,0]

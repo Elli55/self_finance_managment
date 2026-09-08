@@ -2,6 +2,7 @@ import datetime
 import pandas as pd
 import sqlite3 as sq
 import calculation
+import functions
 
 connection = sq.connect('datas/finance.db')
 
@@ -22,5 +23,10 @@ connection = sq.connect('datas/finance.db')
 
 # print(calculation.last_month_income)
 
-print(calculation.group_by_the_category_expenses_sum())
+# print(calculation.group_by_the_category_expenses_sum())
 
+# for _, row in calculation.group_by_the_category_expenses_sum().iterrows():
+#     print('ikinci:   ' , row)
+    
+
+print(calculation.df_debits)

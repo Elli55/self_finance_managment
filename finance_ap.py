@@ -75,8 +75,48 @@ if page == functions.PAGE_NAMES[0]:
                                                        False ),
                                                        unsafe_allow_html=True)
 
+    st.divider()
 
-    st.plotly_chart(gp.generate_graphic_for_expenses_groupby_category(),  width='stretch')
+    fig_expense = gp.generate_graphic_for_expenses_groupby_category()
+    if fig_expense:
+        st.plotly_chart(gp.generate_graphic_for_expenses_groupby_category(),  width='stretch')
+    else:
+        st.error('Graphic couldnt enroaled') 
+
+    st.divider()
+
+
+    df_debits = calculation.df_debits
+
+    if df_debits.empty or df_debits == 0:
+        st.error('No Debits more')
+    else:
+        with st.container():
+            header = st.columns(4, gap='xxsmall')
+
+            header[0].html("<p class='title_for_db_df'> The name </p>")
+            header[1].html("<p class='title_for_db_df'> Amount € </p>")
+            header[2].html("<p class='title_for_db_df'> Deadline </p>")
+            header[3].html("<p class='title_for_db_df'> Payed?  </p>")
+
+            for _ , row in df_debits.iterrows():
+
+                col1, col2, col3, col4 =st.columns(4, gap='xxsmall', )
+
+                col1.html(f"<p class='element_for_db_df'> {row['name']} </p>")
+                col2.html(f"<p class='element_for_db_df'> {row['amount']} €</p>")
+                col3.html(f"<p class='element_for_db_df'> {row['deadline']} </p>")
+
+                if col4.button('Payed', key=f"pay_{row['id']}"):
+
+                    DataWork.write_expenses(row['name'],
+                                            row['amount'],
+                                            'Kreditor',
+                                            f"taken : {row['added_date']}, deadline : {row['deadline']}, given : {functions.DATE_OF_DAY}")
+
+
+                    DataWork.change_debit_status(row('id'))
+
 
 
 
@@ -118,8 +158,8 @@ if page == functions.PAGE_NAMES[1]:
             if name_of_income == functions.INCOME_SOURCE[0]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[0]}'):
                     company = st.selectbox('Company : ', functions.WORKED_COMPANIES)
-                    from_when = st.date_input('From when : ', DataWork.DATE_OF_DAY )
-                    to_when = st.date_input('To when : ', DataWork.DATE_OF_DAY )
+                    from_when = st.date_input('From when : ', functions.DATE_OF_DAY )
+                    to_when = st.date_input('To when : ', functions.DATE_OF_DAY )
                     if st.form_submit_button('Write'):
                         DataWork.payed_from_works(company, from_when, to_when)
 
@@ -140,7 +180,7 @@ if page == functions.PAGE_NAMES[1]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[3]}'):
                     from_who = st.text_input('From : ', max_chars=50)
                     amoun_of_debit = st.number_input('Amount : ', max_value=10000.0, min_value=0.0, step=1.0)
-                    deadline = st.date_input('Deadline : ', DataWork.DATE_OF_DAY)
+                    deadline = st.date_input('Deadline : ', functions.DATE_OF_DAY)
                     if st.form_submit_button('Write'):
                         DataWork.write_income(from_who, amoun_of_debit, functions.INCOME_SOURCE[3])
                         DataWork.write_debits(from_who,amoun_of_debit,deadline)
@@ -154,7 +194,7 @@ if page == functions.PAGE_NAMES[1]:
             st.subheader('Write Working Hours')
 
             company_name = st.selectbox('Company : ', functions.WORKED_COMPANIES)
-            date_of_working_day = st.date_input('Date', value=DataWork.DATE_OF_DAY)
+            date_of_working_day = st.date_input('Date', value=functions.DATE_OF_DAY)
             working_hours = st.number_input('Hours : ', value=5.5 ,max_value=10000.2, min_value=0.0, step=1.0)
             salary_per_hour = st.number_input('Salary per HOUR : ', value=13.0,min_value=0.0 , max_value=10000.0, step=1.0)
             if st.form_submit_button('Write'):

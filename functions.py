@@ -6,12 +6,12 @@ import json
 import datetime
 from pathlib import Path
 
-connection = sq.connect('datas/finance.db')
+
 
 Path('datas').mkdir(exist_ok=True)
 Path('system').mkdir(exist_ok=True)
 
-
+connection = sq.connect('datas/finance.db', check_same_thread=False)
 # logging
 
 def erro_logger(e, location):
@@ -48,7 +48,9 @@ DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
 
 PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
 
-CATEGORY_FOR_EXPENSES = ['Food', 'Alchohol', 'Education', 'Debitor', 'Cleaning Staff', 'Maintenance Staff', 'Familie']
+CATEGORY_FOR_EXPENSES = ['Food', 'Alchohol', 'Ciagerret', 'Education',
+                        'Debitor', 'Cleaning', 'Maintenace Staff', 'Family']
+
 
 INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Debit']
 
@@ -56,7 +58,12 @@ WORKED_COMPANIES = ['BrinkGeherMeyer']
 
 DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
 
-LIST_OF_DATES_FOR_EXPENSES = pd.read_sql('''SELECT strftime('%Y-%m', date) as month FROM Expenses ''', connection)['month'].unique().tolist()
+try:
+
+    LIST_OF_DATES_FOR_EXPENSES = pd.read_sql('''SELECT strftime('%Y-%m', date) as month FROM Expenses ''', connection)['month'].unique().tolist()
+except Exception as e:
+    LIST_OF_DATES_FOR_EXPENSES = []
+    erro_logger(e, 'function/list_of_dates_for_expenses')    
 
 
 
@@ -102,7 +109,44 @@ def generate_metric_card(titel : str, value : float, delta: float, delta_sign : 
 
  
 
-    
+
+# graphics 
+
+
+CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 150, 'limit':300},
+                        'Alchohol': {'low': 25, 'limit':100},
+                        'Cigarette':{'low':10, 'limit':30},
+                        'Education': {'low': 300, 'limit':1000},
+                        'Debitor': {'low': 150, 'limit':200},
+                        'Cleaning Staff': {'low': 10, 'limit':50},
+                        'Maintenance Staff': {'low': 20, 'limit':50},
+                        'Familie':{'low': 150, 'limit':300}}
+
+def get_category_colour(category, amount):
+
+    if category:
+        limit = CATEGORY_LIMITS_FOR_EXPENSES[category]
+    else:
+        limit =  {'low':200, 'limit':500}
+
+
+    if amount < limit['low']:
+
+        colour =  "#19C406" 
+
+    elif amount < limit['limit']:
+
+        colour =  "#FBFF00"  
+
+    else:
+        colour = '#ff0000'    
+
+    return colour    
+
+
+# for debits
+
+
 
 
 

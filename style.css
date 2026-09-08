@@ -49,5 +49,13 @@
 
 .delta_of_metric_card{
     color: #5d5b58;
-    
+
+}
+
+
+/* for debits list */
+
+.title_for_db_df{
+    font-size: 2rem;
+    font-weight: 700;
 }
