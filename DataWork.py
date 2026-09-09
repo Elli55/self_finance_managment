@@ -3,7 +3,7 @@ import functions
 import pandas as pd
 
 
-def write_expenses(expense, amount, category, note):
+def write_expenses(expense, amount, category, date,note):
     
 
 
@@ -25,7 +25,7 @@ def write_expenses(expense, amount, category, note):
             corsor.execute(f'''
 
                     INSERT INTO Expenses(name, amount,category,  date, note) VALUES(?,?,?,?,?)''',
-                      (expense,amount,category, functions.DATE_OF_DAY, note))
+                      (expense,amount,category, date, note))
 
         functions.proces_logger(f'{amount} - {expense} for {functions.DATE_OF_DAY} added to Expenses Table ', 'DataWork/write_expenses' )
     except Exception as e:
@@ -33,7 +33,7 @@ def write_expenses(expense, amount, category, note):
 
 
 
-def write_income(source,  amount, note):
+def write_income(source,  amount,date, note):
 
 
     try:
@@ -46,15 +46,15 @@ def write_income(source,  amount, note):
                 CREATE TABLE IF NOT EXISTS Income(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 source TEXT,
-                date TEXT,
                 amount REAL,
+                date TEXT,
                 note TEXT)
                 ''')
 
             corsor.execute(f'''
 
-                INSERT INTO Income(source, date, amount, note) VALUES (?,?,?,?)''',
-                  (source,functions.DATE_OF_DAY,amount,note)
+                INSERT INTO Income(source,  amount, date,note) VALUES (?,?,?,?)''',
+                  (source,amount,date,note)
 
                 )
 
@@ -85,8 +85,8 @@ def write_work_hours(name_of_company : str, date_of_work, count_of_hours, salary
 
             corsor.execute(f'''
 
-                INSERT INTO WorkHoursInBrink(date_of_work, count_of_hours, salary_per_hour, payed, date_of_day )
-                VALUES(?,?,?,?)''',
+                INSERT INTO {name_of_company.strip()}(date_of_work, count_of_hours, salary_per_hour, payed, date_of_day )
+                VALUES(?,?,?,?,?)''',
                   (date_of_work,count_of_hours,salary_per_hour,0,functions.DATE_OF_DAY)
                 )
 
@@ -95,7 +95,7 @@ def write_work_hours(name_of_company : str, date_of_work, count_of_hours, salary
         functions.erro_logger(e, 'DataWork/write_hours_from_brink')   
 
 
-def payed_from_works( work_place :str ,start_date, end_date):
+def payed_from_works( work_place :str , when ,start_date, end_date):
 
     try:
 
@@ -115,7 +115,7 @@ def payed_from_works( work_place :str ,start_date, end_date):
             
                         WHERE DATE(date) BETWEEN DATE({start_date}) AND DATE({end_date})''', db)
 
-            write_income(work_place, df.iloc[0][0], f'From {work_place} : {start_date} - {end_date} ' )
+            write_income(work_place, when,df.iloc[0][0], f'From {work_place} : {start_date} - {end_date} ' )
 
             functions.proces_logger(f'From  {start_date} - {end_date} added to {work_place.strip()} Table', 'DataWork/payed_from_works' )
 
@@ -124,7 +124,7 @@ def payed_from_works( work_place :str ,start_date, end_date):
 
 
 
-def write_debits(name, amount, deadline):
+def write_debits(name, amount, deadline,date):
 
     try:    
 
@@ -139,7 +139,7 @@ def write_debits(name, amount, deadline):
                 name TEXT,
                 amount REAL,
                 deadline TEXT,
-                status TEXT,
+                status INTEGER,
                 added_date TEXT)
 
                 ''')
@@ -147,7 +147,7 @@ def write_debits(name, amount, deadline):
             corsor.execute(f'''
 
                 INSERT INTO Debits(name, amount, deadline, status, added_date)
-                Values(?,?,?,?,?)''',(name, amount,  deadline, 0, functions.DATE_OF_DAY)
+                Values(?,?,?,?,?)''',(name, amount,  deadline, 0, date)
 
                 )
 
@@ -164,13 +164,13 @@ def change_debit_status(iid):
 
             corsor = db.cursor()
 
-            corsor.execute(f'''
+            corsor.execute('''
 
                     UPDATE Debits
                     SET status = 1
-                    WHERE id = {iid} 
+                    WHERE id = ? 
 
-                    ''')
+                    ''', (iid,))
             
             functions.proces_logger(f'for {iid} of debit status changed', 'functions/change_debit_status')
     except Exception as e:

@@ -48,11 +48,11 @@ DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
 
 PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
 
-CATEGORY_FOR_EXPENSES = ['Food', 'Alchohol', 'Ciagerret', 'Education',
-                        'Debitor', 'Cleaning', 'Maintenace Staff', 'Family']
+CATEGORY_FOR_EXPENSES = ['Food', 'Alchohol', 'Ciagerret', 'Rent','Education','Gift',
+                        'Debitor','Invest', 'Cleaning', 'Maintenace Staff','Travel', 'Family']
 
 
-INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Debit']
+INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
 
 WORKED_COMPANIES = ['BrinkGeherMeyer'] 
 
@@ -120,7 +120,11 @@ CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 150, 'limit':300},
                         'Debitor': {'low': 150, 'limit':200},
                         'Cleaning Staff': {'low': 10, 'limit':50},
                         'Maintenance Staff': {'low': 20, 'limit':50},
-                        'Familie':{'low': 150, 'limit':300}}
+                        'Familie':{'low': 150, 'limit':300},
+                        'Travel':{'low':20, 'limit':100},
+                        'Kreditor':{'low':150, 'limit':500},
+                        'Gift':{'low':20, 'limit':100},
+                        'Rent':{'low':250, 'limit':500}}
 
 def get_category_colour(category, amount):
 

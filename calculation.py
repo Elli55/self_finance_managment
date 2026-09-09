@@ -45,7 +45,7 @@ with sq.connect('datas/finance.db') as connection:
                                             WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''',
                                             connection).iloc[0,0].round(2)
     except Exception as e:
-        sum__month_expenses = 0
+        sum_this_month_expenses = 0
 
 
     def group_by_the_category_expenses_sum():
@@ -75,6 +75,8 @@ with sq.connect('datas/finance.db') as connection:
 
     except Exception as e:
         delta_for_expenses = 0
+        last_month_expenses = 0
+
 
 
     def sum__month_expenses(month):
@@ -108,6 +110,7 @@ with sq.connect('datas/finance.db') as connection:
         delta_for_income =(100 - (last_month_income / sum_this_month_income * 100)).round(2)
 
     except Exception as e:
+        sum_this_month_income = 0
         last_month_income = 0
         delta_for_income = 0
 
@@ -118,9 +121,18 @@ with sq.connect('datas/finance.db') as connection:
 
     try:
         df_debits = pd.read_sql('SELECT * FROM Debits', connection)
+        df_debits_un_paid = pd.read_sql('SELECT * FROM Debits WHERE status = 0', connection)
     except  Exception as e:
         df_debits = None
+        df_debits_un_paid = pd.DataFrame()
    
 
+    # working
+
+    try:
+        df_working = pd.read_sql('SELECT * FROM BrinkGeherMeyer', connection)
+
+    except  Exception as e:
+        df_working = pd.DataFrame()
     
 
