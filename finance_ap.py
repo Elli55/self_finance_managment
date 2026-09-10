@@ -53,7 +53,7 @@ if page == functions.PAGE_NAMES[0]:
                                                     calculation.BALANCE,
                                                       calculation.delta_for_balance,
                                                       '%',
-                                                        True),
+                                                      False),
                                                           unsafe_allow_html=True)
 
         
@@ -63,7 +63,7 @@ if page == functions.PAGE_NAMES[0]:
                                                     calculation.sum_this_month_income,
                                                       calculation.delta_for_income,
                                                         '%',
-                                                        True), 
+                                                        False), 
                                                         unsafe_allow_html=True)
 
     with col3:
@@ -72,7 +72,7 @@ if page == functions.PAGE_NAMES[0]:
                                                    calculation.sum_this_month_expenses,
                                                      calculation.delta_for_expenses,
                                                       '%',
-                                                       False ),
+                                                       True ),
                                                        unsafe_allow_html=True)
 
     st.divider()

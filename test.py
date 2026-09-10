@@ -35,10 +35,10 @@ connection = sq.connect('datas/finance.db')
 # print(sum(calculation.load_expenses_df()['amount']))
 # print(calculation.df_income)
 
-print(calculation.df_working)
+# print(calculation.df_working)
 
 
-# DataWork.update_balance()
+DataWork.update_balance()
 
 
 

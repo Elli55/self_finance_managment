@@ -118,13 +118,14 @@ CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 150, 'limit':300},
                         'Cigarette':{'low':10, 'limit':30},
                         'Education': {'low': 300, 'limit':1000},
                         'Debitor': {'low': 150, 'limit':200},
-                        'Cleaning Staff': {'low': 10, 'limit':50},
+                        'Cleaning': {'low': 10, 'limit':50},
                         'Maintenance Staff': {'low': 20, 'limit':50},
                         'Familie':{'low': 150, 'limit':300},
                         'Travel':{'low':20, 'limit':100},
                         'Kreditor':{'low':150, 'limit':500},
                         'Gift':{'low':20, 'limit':100},
-                        'Rent':{'low':250, 'limit':500}}
+                        'Rent':{'low':250, 'limit':500},
+                        'Invest':{'low':100, 'limit':500}}
 
 def get_category_colour(category, amount):
 
