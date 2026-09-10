@@ -11,7 +11,15 @@ from pathlib import Path
 Path('datas').mkdir(exist_ok=True)
 Path('system').mkdir(exist_ok=True)
 
-connection = sq.connect('datas/finance.db', check_same_thread=False)
+import streamlit as st
+
+@st.cache_resource
+def get_connection():
+    return sq.connect('datas/finance.db', check_same_thread=False)
+
+connection = get_connection()
+
+
 # logging
 
 def erro_logger(e, location):

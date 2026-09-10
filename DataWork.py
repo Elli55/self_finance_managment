@@ -3,6 +3,43 @@ import functions
 import pandas as pd
 
 
+
+def update_balance():
+
+    try:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
+
+            sum_of_expenses = pd.read_sql('SELECT SUM(amount) FROM Expenses', db).iloc[0, 0]
+            sum_of_income = pd.read_sql('SELECT SUM(amount) FROM Income', db).iloc[0,0]
+            balance =  sum_of_income - sum_of_expenses
+
+            corsor = db.cursor()
+
+            corsor.execute('''
+
+                        CREATE TABLE IF NOT EXISTS Balance(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        date  TEXT,
+                        balance REAL 
+                        )
+
+                        ''')
+
+            corsor.execute('''INSERT INTO Balance(date, balance)
+                                VALUES(?,?)
+
+                                    ''', (functions.DATE_OF_DAY, balance))
+
+            functions.proces_logger(f'for {functions.DATE_OF_DAY} balance refreshed currrent Balance : {balance}', 'DataWork/update_balance')
+
+    except Exception as e:
+
+        functions.erro_logger(e, 'DataWork/update_balance')
+
+
+        
+
+
 def write_expenses(expense, amount, category, date,note):
     
 
@@ -26,6 +63,7 @@ def write_expenses(expense, amount, category, date,note):
 
                     INSERT INTO Expenses(name, amount,category,  date, note) VALUES(?,?,?,?,?)''',
                       (expense,amount,category, date, note))
+            update_balance()
 
         functions.proces_logger(f'{amount} - {expense} for {functions.DATE_OF_DAY} added to Expenses Table ', 'DataWork/write_expenses' )
     except Exception as e:
@@ -57,6 +95,8 @@ def write_income(source,  amount,date, note):
                   (source,amount,date,note)
 
                 )
+
+            update_balance()
 
             functions.proces_logger(f'{amount} EUR from {source} added to Income Table', 'DataWork/write_income')
     except Exception as e:
@@ -151,6 +191,8 @@ def write_debits(name, amount, deadline,date):
 
                 )
 
+            update_balance()
+
             functions.proces_logger(f'For {name} {amount} EUR added to Debits Table ','DataWork/write_debits' )
 
     except Exception as e:
@@ -160,7 +202,7 @@ def write_debits(name, amount, deadline,date):
 def change_debit_status(iid):
 
     try:
-        with sq.connect('Datas/finance.db', check_same_thread=False) as db:
+        with sq.connect('datas/finance.db', check_same_thread=False) as db:
 
             corsor = db.cursor()
 
@@ -177,37 +219,3 @@ def change_debit_status(iid):
         functions.erro_logger(e, 'functions/change_debit_status')            
 
 
-def update_balance():
-
-    try:
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
-
-            sum_of_expenses = pd.read_sql('SELECT SUM(amount) FROM Expenses', db).iloc[0, 0]
-            sum_of_income = pd.read_sql('SELECT SUM(amount) FROM Income', db).iloc[0,0]
-            balance =  sum_of_income - sum_of_expenses
-
-            corsor = db.cursor()
-
-            corsor.execute('''
-
-                        CREATE TABLE IF NOT EXISTS Balance(
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date  TEXT,
-                        balance REAL 
-                        )
-
-                        ''')
-
-            corsor.execute('''INSERT INTO Balance(date, balance)
-                                VALUES(?,?)
-
-                                    ''', (functions.DATE_OF_DAY, balance))
-
-            functions.proces_logger(f'for {functions.DATE_OF_DAY} balance refreshed currrent Balance : {balance}', 'DataWork/update_balance')
-
-    except Exception as e:
-
-        functions.erro_logger(e, 'DataWork/update_balance')
-
-
-        

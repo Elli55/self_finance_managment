@@ -4,6 +4,7 @@ import functions
 import DataWork
 import calculation
 import graphics as gp
+import write_month_debits
 
 
 
@@ -44,14 +45,33 @@ page = st.session_state.page
 
 
 if page == functions.PAGE_NAMES[0]:
+
+
+    write_month_debits.write_returned_debits()
+
+
+    BALANCE = calculation.calculate_balance()
+    last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
+    sum_this_month_income = calculation.calculate_sum_of_this_month_income()
+    last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
+    sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
+    last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
+    df_debits, df_unpaid_debits = calculation.df_debits_and_unpaid_debits()
+
+
+
+
+
+
+
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
 
     with col1:
 
         st.markdown(functions.generate_metric_card('Balance',
-                                                    calculation.BALANCE,
-                                                      calculation.delta_for_balance,
+                                                    BALANCE,
+                                                      delta_for_balance,
                                                       '%',
                                                       False),
                                                           unsafe_allow_html=True)
@@ -60,8 +80,8 @@ if page == functions.PAGE_NAMES[0]:
     with col2:
 
         st.markdown(functions.generate_metric_card('Income',
-                                                    calculation.sum_this_month_income,
-                                                      calculation.delta_for_income,
+                                                    sum_this_month_income,
+                                                      delta_for_income,
                                                         '%',
                                                         False), 
                                                         unsafe_allow_html=True)
@@ -69,8 +89,8 @@ if page == functions.PAGE_NAMES[0]:
     with col3:
 
         st.markdown(functions.generate_metric_card('Expenses',
-                                                   calculation.sum_this_month_expenses,
-                                                     calculation.delta_for_expenses,
+                                                   sum_this_month_expenses,
+                                                     delta_for_expenses,
                                                       '%',
                                                        True ),
                                                        unsafe_allow_html=True)
@@ -86,10 +106,10 @@ if page == functions.PAGE_NAMES[0]:
     st.divider()
 
 
-    df_debits = calculation.df_debits_un_paid
+
 
     
-    if df_debits.empty:
+    if df_unpaid_debits.empty:
         st.error('No Debits more')
     else:
         with st.container():
@@ -145,7 +165,7 @@ if page == functions.PAGE_NAMES[0]:
 
 
 
-            for _ , row in df_debits.iterrows():
+            for _ , row in df_unpaid_debits.iterrows():
 
                 col1, col2, col3, col4 =st.columns(4, gap='xxsmall', )
 
