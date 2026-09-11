@@ -69,3 +69,11 @@ DataWork.update_balance()
 #         reset_tables()
 #     else:
 #         print("❌ Əməliyyat ləğv edildi")
+#
+
+
+# drop_old_table.py
+# import sqlite3
+
+# with sqlite3.connect('datas/finance.db') as db:
+#     db.cursor().execute('DROP TABLE IF EXISTS BrinkGeherMeyer')

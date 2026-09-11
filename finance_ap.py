@@ -5,6 +5,7 @@ import DataWork
 import calculation
 import graphics as gp
 import write_month_debits
+import datetime
 
 
 
@@ -98,10 +99,10 @@ if page == functions.PAGE_NAMES[0]:
     st.divider()
 
     fig_expense = gp.generate_graphic_for_expenses_groupby_category()
-    if fig_expense:
-        st.plotly_chart(gp.generate_graphic_for_expenses_groupby_category(),  width='stretch')
+    if fig_expense is not None:
+        st.plotly_chart(fig_expense, use_container_width=True)
     else:
-        st.error('Graphic couldnt enroaled') 
+        st.error('Graphic could not be loaded')
 
     st.divider()
 
@@ -270,23 +271,43 @@ if page == functions.PAGE_NAMES[1]:
     with col3:
 
         with st.form('WriteWorkHours'):
-
             st.subheader('Write Working Hours')
 
-            company_name = st.selectbox('Company : ', functions.WORKED_COMPANIES)
-            date_of_working_day = st.date_input('Date', value=functions.DATE_OF_DAY)
-            working_hours = st.number_input('Hours : ', value=5.5 ,max_value=10000.2, min_value=0.0, step=1.0)
-            salary_per_hour = st.number_input('Salary per HOUR : ', value=13.0,min_value=0.0 , max_value=10000.0, step=1.0)
-            if st.form_submit_button('Write'):
-                if working_hours == 0:
-                    st.warning('Add the WORKING HOURS pls')
-                elif salary_per_hour == 0:
-                    st.warning('Add the SALARY PER HOURS pls')
+            company_name    = st.selectbox('Company', functions.WORKED_COMPANIES)
+            date_of_work    = st.date_input('Date', value=datetime.date.today())
+
+            col_t1, col_t2 = st.columns(2)
+            with col_t1:
+                start_time  = st.time_input('Start time', value=datetime.time(8, 0))
+            with col_t2:
+                end_time    = st.time_input('End time',   value=datetime.time(16, 0))
+
+            salary_per_hour = st.number_input('Salary per hour (€)',
+                                            value=13.0, min_value=0.0,
+                                            max_value=1000.0, step=0.5)
+
+            
+            if start_time and end_time:
+                from datetime import datetime as dt
+                diff = round(
+                    (dt.combine(datetime.date.today(), end_time) -
+                    dt.combine(datetime.date.today(), start_time)
+                    ).total_seconds() / 3600, 2
+                )
+                if diff > 0:
+                    st.caption(f'Total: {diff}h × {salary_per_hour} € = {round(diff * salary_per_hour, 2)} €')
                 else:
-                    DataWork.write_work_hours(company_name, date_of_working_day, working_hours, salary_per_hour)
-                    st.success(f'For {working_hours} hours total {working_hours * salary_per_hour} earned from {company_name}')
+                    st.warning('End time must be after start time')
 
-
+            if st.form_submit_button('Write'):
+                if end_time <= start_time:
+                    st.error('End time must be after start time')
+                else:
+                    DataWork.write_work_hours(
+                        company_name, date_of_work,
+                        start_time, end_time, salary_per_hour
+                    )
+                    st.success(f'{diff}h added for {company_name}')
 
 
 

@@ -131,8 +131,7 @@ def calculate_last_month_income_and_delta():
 
         last_month_income = df_last_month_income['avg_amount'].iloc[0].round(2) if not df_last_month_income.empty else 0
 
-        delta_for_income =(100 - (last_month_income / calculate_sum_income() * 100)).round(2)
-
+        delta_for_income = (100 - (last_month_income / calculate_sum_of_this_month_income() * 100)).round(2)
     except Exception as e:
         functions.erro_logger(e, 'calculation/calculate_last_month_income_and_delta')
 

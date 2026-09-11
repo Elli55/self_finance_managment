@@ -1,6 +1,7 @@
 import sqlite3 as sq
 import functions
 import pandas as pd
+from datetime import datetime
 
 
 
@@ -104,60 +105,70 @@ def write_income(source,  amount,date, note):
         functions.erro_logger(e, 'DataWork/write_income')            
 
 
-def write_work_hours(name_of_company : str, date_of_work, count_of_hours, salary_per_hour ):
-
-    
-
+def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hour):
     try:
+        
+        
+        fmt = '%H:%M:%S'
+        start = datetime.strptime(str(start_time), fmt)
+        end   = datetime.strptime(str(end_time),   fmt)
+        total_hours = round((end - start).total_seconds() / 3600, 2)
+
+        if total_hours <= 0:
+            functions.erro_logger('End time must be after start time', 'DataWork/write_work_hours')
+            return
+
         with sq.connect('datas/finance.db', check_same_thread=False) as db:
-            corsor = db.cursor()
+            cursor = db.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS WorkHours(
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    company         TEXT,
+                    date_of_work    TEXT,
+                    start_time      TEXT,
+                    end_time        TEXT,
+                    total_hours     REAL,
+                    salary_per_hour REAL,
+                    payed           INTEGER DEFAULT 0,
+                    date_of_day     TEXT)
+            ''')
+            cursor.execute(
+                '''INSERT INTO WorkHours
+                   (company, date_of_work, start_time, end_time, total_hours, salary_per_hour, payed, date_of_day)
+                   VALUES(?,?,?,?,?,?,0,?)''',
+                (company, str(date_of_work), str(start_time), str(end_time),
+                 total_hours, salary_per_hour, functions.DATE_OF_DAY)
+            )
 
-            corsor.execute(f'''
-                CREATE TABLE IF NOT EXISTS {name_of_company.strip()}(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                date_of_work TEXT,
-                count_of_hours REAL,
-                salary_per_hour REAL,
-                payed INTEGER, 
-                date_of_day TEXT
-                )
-                ''')
+        functions.proces_logger(
+            f'{company} | {date_of_work} | {start_time}-{end_time} | {total_hours}h added',
+            'DataWork/write_work_hours'
+        )
 
-            corsor.execute(f'''
-
-                INSERT INTO {name_of_company.strip()}(date_of_work, count_of_hours, salary_per_hour, payed, date_of_day )
-                VALUES(?,?,?,?,?)''',
-                  (date_of_work,count_of_hours,salary_per_hour,0,functions.DATE_OF_DAY)
-                )
-
-            functions.proces_logger(f'{count_of_hours} Hours for {date_of_work} added to {name_of_company.strip()} Table', 'DataWork/write_hours_from_brink')
     except Exception as e:
-        functions.erro_logger(e, 'DataWork/write_hours_from_brink')   
+        functions.erro_logger(e, 'DataWork/write_work_hours')
 
 
-def payed_from_works( work_place :str , when ,start_date, end_date):
-
+def payed_from_works(work_place, start_date, end_date):
     try:
-
         with sq.connect('datas/finance.db', check_same_thread=False) as db:
+            cursor = db.cursor()
+            cursor.execute(
+                '''UPDATE WorkHours SET payed = 1
+                   WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+                (work_place, str(start_date), str(end_date))
+            )
+            df = pd.read_sql(
+                '''SELECT SUM(total_hours * salary_per_hour) as total
+                   FROM WorkHours
+                   WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+                db,
+                params=(work_place, str(start_date), str(end_date))
+            )
+            total = float(df.iloc[0][0] or 0)
+            write_income(work_place, total, f'From {work_place}: {start_date} - {end_date}')
 
-            corsor = db.cursor()
-
-            corsor.execute(f'''
-
-                    UPDATE {work_place.strip()}
-                    SET payed = 1
-                    WHERE DATE(date) BETWEEN DATE({start_date}) AND DATE({end_date})
-                    
-                    ''')
-
-            df = pd.read_sql(f'''SELECT SUM(count_of_hours * salary_per_hour) FROM {work_place.strip()}
-            
-                        WHERE DATE(date) BETWEEN DATE({start_date}) AND DATE({end_date})''', db)
-
-            write_income(work_place, when,df.iloc[0][0], f'From {work_place} : {start_date} - {end_date} ' )
-
-            functions.proces_logger(f'From  {start_date} - {end_date} added to {work_place.strip()} Table', 'DataWork/payed_from_works' )
+        functions.proces_logger(f'{work_place} | {start_date}-{end_date} paid', 'DataWork/payed_from_works')
 
     except Exception as e:
         functions.erro_logger(e, 'DataWork/payed_from_works')
