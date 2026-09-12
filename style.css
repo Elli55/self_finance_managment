@@ -53,9 +53,17 @@
 }
 
 
-/* for debits list */
+/* for lists */
 
-.title_for_db_df{
+.df_headers{
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+
+.subtitle{
+
     font-size: 2rem;
     font-weight: 700;
+
 }

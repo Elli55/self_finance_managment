@@ -34,7 +34,7 @@ with st.sidebar:
             
         if st.button(
                     page_name,
-                    use_container_width=True,
+                    width='stretch',
                     type="primary" if is_active else "secondary"
                     ):
                     
@@ -51,13 +51,14 @@ if page == functions.PAGE_NAMES[0]:
     write_month_debits.write_returned_debits()
 
 
-    BALANCE = calculation.calculate_balance()
+    BALANCE = calculation.calculate_current_balance()
     last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
     sum_this_month_income = calculation.calculate_sum_of_this_month_income()
     last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
     sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
     last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
     df_debits, df_unpaid_debits = calculation.df_debits_and_unpaid_debits()
+    df_un_paid_salary = calculation.un_paid_working_hours()
 
 
 
@@ -98,28 +99,31 @@ if page == functions.PAGE_NAMES[0]:
 
     st.divider()
 
+    st.html("<h1 class='subtitle'> This Month Expenses Graphic</h1>")
+
+
     fig_expense = gp.generate_graphic_for_expenses_groupby_category()
     if fig_expense is not None:
-        st.plotly_chart(fig_expense, use_container_width=True)
+        st.plotly_chart(fig_expense, width='stretch')
     else:
         st.error('Graphic could not be loaded')
 
     st.divider()
 
 
-
+    st.html("<h1 class='subtitle'> Debits List</h1>")
 
     
     if df_unpaid_debits.empty:
         st.error('No Debits more')
     else:
         with st.container():
-            header = st.columns(4, gap='xxsmall')
+            header_for_debits = st.columns(4, gap='xxsmall')
 
-            header[0].html("<p class='title_for_db_df'> The name </p>")
-            header[1].html("<p class='title_for_db_df'> Amount € </p>")
-            header[2].html("<p class='title_for_db_df'> Deadline </p>")
-            header[3].html("<p class='title_for_db_df'> Paid?  </p>")
+            header_for_debits[0].html("<p class='df_headers'> The name </p>")
+            header_for_debits[1].html("<p class='df_headers'> Amount € </p>")
+            header_for_debits[2].html("<p class='df_headers'> Deadline </p>")
+            header_for_debits[3].html("<p class='df_headers'> Paid?  </p>")
 
            
 
@@ -149,7 +153,7 @@ if page == functions.PAGE_NAMES[0]:
 
                 col1, col2 = st.columns(2)
 
-                if col1.button('Paid', type='primary', use_container_width=True):
+                if col1.button('Paid', type='primary', width='stretch'):
                     DataWork.write_expenses(line['name'],paid_amout,'Kreditor', f'Paid kreditor for {line['name']}')
                     DataWork.change_debit_status(line['id'])
                     if rest:
@@ -157,7 +161,7 @@ if page == functions.PAGE_NAMES[0]:
 
                     st.rerun()
 
-                if col2.button('Out', type='secondary', use_container_width=True):
+                if col2.button('Out', type='secondary', width='stretch'):
                     st.rerun()
 
 
@@ -170,14 +174,40 @@ if page == functions.PAGE_NAMES[0]:
 
                 col1, col2, col3, col4 =st.columns(4, gap='xxsmall', )
 
-                col1.html(f"<p class='element_for_db_df'> {row['name']} </p>")
-                col2.html(f"<p class='element_for_db_df'> {row['amount']} €</p>")
-                col3.html(f"<p class='element_for_db_df'> {row['deadline']} </p>")
+                col1.html(f"<p class='element_of_df'> {row['name']} </p>")
+                col2.html(f"<p class='element_of_df'> {row['amount']} €</p>")
+                col3.html(f"<p class='element_of_df'> {row['deadline']} </p>")
 
                 if col4.button('Payed', key=f"pay_{row['id']}"):
                         pay_dialog(row)
 
-                    
+
+    st.divider()
+
+    st.html("<h1 class='subtitle'> Working Hours List </h1>")
+
+
+    if df_un_paid_salary.empty:
+        st.info('No more unpaid working hours')
+    else:
+
+        header_for_salary = st.columns(4, gap='xxsmall')
+
+        header_for_salary[0].html("<p class='df_headers'>Company</p>")
+        header_for_salary[1].html("<p class='df_headers'>Worked Hours</p>")
+        header_for_salary[2].html("<p class='df_headers'>Nominal</p>")
+        header_for_salary[3].html("<p class='df_headers'>Salary</p>")
+
+        for _, line in calculation.un_paid_working_hours().iterrows():
+
+            cols = st.columns(4, gap='xxsmall')
+
+            cols[0].html(f"<p class='element_of_df'>{line['company']}</p>")
+            cols[1].html(f"<p class='element_of_df'>{line['hours']}</p>")
+            cols[2].html(f"<p class='element_of_df'>{line['nominal']}</p>")
+            cols[3].html(f"<p class='element_of_df'>{line['salary']}</p>")
+
+                
 
                  
                     
@@ -278,9 +308,9 @@ if page == functions.PAGE_NAMES[1]:
 
             col_t1, col_t2 = st.columns(2)
             with col_t1:
-                start_time  = st.time_input('Start time', value=datetime.time(8, 0))
+                start_time  = st.time_input('Start time', value=datetime.time(12, 0))
             with col_t2:
-                end_time    = st.time_input('End time',   value=datetime.time(16, 0))
+                end_time    = st.time_input('End time',   value=datetime.time(18, 0))
 
             salary_per_hour = st.number_input('Salary per hour (€)',
                                             value=13.0, min_value=0.0,

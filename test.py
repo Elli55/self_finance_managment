@@ -22,7 +22,11 @@ connection = sq.connect('datas/finance.db')
 
 
 
-# print(calculation.last_month_income)
+# print(calculation.calculate_last_month_income_and_delta())
+
+# a = 50
+# b = 2500
+# print(a / b * 100)
 
 # print(calculation.group_by_the_category_expenses_sum())
 
@@ -38,42 +42,22 @@ connection = sq.connect('datas/finance.db')
 # print(calculation.df_working)
 
 
-DataWork.update_balance()
+# DataWork.update_balance()
 
 
 
-# import sqlite3 as sq
-
-# def reset_tables():
-#     try:
-#         with sq.connect('datas/finance.db') as conn:
-#             cursor = conn.cursor()
-            
-#             # Debits cədvəlini sil
-#             cursor.execute("DROP TABLE IF EXISTS Debits")
-#             print("✅ Debits cədvəli silindi")
-            
-#             # Income cədvəlini sil
-#             cursor.execute("DROP TABLE IF EXISTS Income")
-#             print("✅ Income cədvəli silindi")
-            
-#             conn.commit()
-#             print("\n🎉 Hər iki cədvəl uğurla silindi!")
-            
-#     except Exception as e:
-#         print(f"❌ Xəta: {e}")
-
-# if __name__ == "__main__":
-#     confirm = input("⚠️  Debits və Income cədvəlləri silinəcək. Davam etmək istəyirsiniz? (y/n): ")
-#     if confirm.lower() == 'y':
-#         reset_tables()
-#     else:
-#         print("❌ Əməliyyat ləğv edildi")
-#
+for _, line in calculation.un_paid_working_hours().iterrows():
+    print(line)
 
 
-# drop_old_table.py
-# import sqlite3
+# print(pd.DataFrame())
 
-# with sqlite3.connect('datas/finance.db') as db:
-#     db.cursor().execute('DROP TABLE IF EXISTS BrinkGeherMeyer')
+
+
+# def nese():
+
+#     a = None
+
+#     return print(a) or print(2)
+
+# nese()

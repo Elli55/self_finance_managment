@@ -90,7 +90,7 @@ def generate_metric_card(titel : str, value : float, delta: float, delta_sign : 
    try:
         
 
-        delta_title = '▲' if delta > 0 else '▼'
+        delta_title = '▼' if delta > 0 else '▲'
 
         if ineverse is False:
             background_colour = 'background_positive' if value <= 0 else 'background_negative' 

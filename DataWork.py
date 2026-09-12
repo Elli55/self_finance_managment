@@ -64,7 +64,7 @@ def write_expenses(expense, amount, category, date,note):
 
                     INSERT INTO Expenses(name, amount,category,  date, note) VALUES(?,?,?,?,?)''',
                       (expense,amount,category, date, note))
-            update_balance()
+            
 
         functions.proces_logger(f'{amount} - {expense} for {functions.DATE_OF_DAY} added to Expenses Table ', 'DataWork/write_expenses' )
     except Exception as e:
@@ -97,7 +97,7 @@ def write_income(source,  amount,date, note):
 
                 )
 
-            update_balance()
+          
 
             functions.proces_logger(f'{amount} EUR from {source} added to Income Table', 'DataWork/write_income')
     except Exception as e:
@@ -202,7 +202,7 @@ def write_debits(name, amount, deadline,date):
 
                 )
 
-            update_balance()
+            
 
             functions.proces_logger(f'For {name} {amount} EUR added to Debits Table ','DataWork/write_debits' )
 

@@ -7,20 +7,23 @@ connection = functions.connection
 
 
 # balance
-def calculate_balance():
-
+def calculate_current_balance():
     try:
-        df_balance = pd.read_sql('''
-                        SELECT balance from Balance
-                        ORDER BY id DESC LIMIT 1
+        income = pd.read_sql(
+            'SELECT SUM(amount) as total FROM Income',
+            connection
+        ).iloc[0, 0] or 0.0
 
-                        ''', connection)
+        expenses = pd.read_sql(
+            'SELECT SUM(amount) as total FROM Expenses',
+            connection
+        ).iloc[0, 0] or 0.0
 
-        BALANCE = df_balance['balance'].iloc[0].round(2) if not df_balance.empty else 0
+        return round(float(income) - float(expenses), 2)
+
     except Exception as e:
-        functions.erro_logger(e, 'calculation/calculate_balance')
-        BALANCE = 0
-    return BALANCE
+        functions.erro_logger(e, 'calculation/calculate_current_balance')
+        return 0.0
 
 
 def calculate_last_month_balance_and_delta_for_balance():
@@ -34,7 +37,7 @@ def calculate_last_month_balance_and_delta_for_balance():
 
         last_month_balance = df_last_month_balance['avg_balance'].iloc[0].round(2) if not df_last_month_balance.empty else 0
 
-        delta_for_balance = (100 - (last_month_balance / calculate_balance() * 100)).round(2)
+        delta_for_balance = round((last_month_balance - calculate_current_balance()) / last_month_balance * 100, 2)
 
     except Exception as e:
         functions.erro_logger(e, 'calculation/calculate_last_month_balance_and_delta_of_balance')
@@ -79,13 +82,13 @@ def last_month_expenses_and_delta():
     try:
         df_last_month_expenses = pd.read_sql('''
 
-                                SELECT AVG(amount) as avg_amount FROM Expenses
+                                SELECT SUM(amount) as sum_amount FROM Expenses
                                 WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now', '-1 month')
 
                             ''', connection)
-        last_month_expenses = df_last_month_expenses['avg_amount'].iloc[0].round(2) if not df_last_month_expenses.empty else 0
+        last_month_expenses = df_last_month_expenses['sum_amount'].iloc[0].round(2) if not df_last_month_expenses.empty else 0
 
-        delta_for_expenses = (100 - (last_month_expenses / calculate_sum_of_this_month_expense() * 100)).round(2)
+        delta_for_expenses =round((last_month_expenses - calculate_sum_of_this_month_expense()) /  last_month_expenses * 100, 2)
 
     except Exception as e:
         functions.erro_logger(e, 'calculation/last_month_expenses_and_delta')
@@ -123,15 +126,15 @@ def calculate_last_month_income_and_delta():
 
         df_last_month_income = pd.read_sql('''
 
-                                                SELECT AVG(amount) as avg_amount FROM Income
+                                                SELECT SUM(amount) as total FROM Income
                                                 WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now', '-1 month')
 
                                         ''', connection)
 
 
-        last_month_income = df_last_month_income['avg_amount'].iloc[0].round(2) if not df_last_month_income.empty else 0
+        last_month_income = df_last_month_income['total'].iloc[0].round(2) if not df_last_month_income.empty else 0
 
-        delta_for_income = (100 - (last_month_income / calculate_sum_of_this_month_income() * 100)).round(2)
+        delta_for_income = round((last_month_income - calculate_sum_of_this_month_income()) / last_month_income * 100, 2)
     except Exception as e:
         functions.erro_logger(e, 'calculation/calculate_last_month_income_and_delta')
 
@@ -156,11 +159,23 @@ def df_debits_and_unpaid_debits():
 
 # working
 
-def df_brinkgehermeyer():
+df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+
+def un_paid_working_hours():
 
     try:
-        df_working = pd.read_sql('SELECT * FROM BrinkGeherMeyer', connection)
 
-    except  Exception as e:
-        df_working = pd.DataFrame()
-    return df_working
+        grouped_by_company = pd.read_sql('''
+
+                            SELECT company, SUM(total_hours * salary_per_hour)  as salary, SUM(total_hours) as hours, salary_per_hour as nominal  FROM WorkHours
+                            WHERE payed = 0
+                            GROUP BY company
+
+                            ''', connection)
+
+        return grouped_by_company
+
+    except Exception as e:
+        functions.erro_logger(e, 'calculation/un_paid_working_hours')
+        grouped_by_company = pd.DataFrame()
+        return grouped_by_company
