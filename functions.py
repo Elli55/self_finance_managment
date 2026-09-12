@@ -82,7 +82,9 @@ def load_css():
         return f'<style> {f.read()} </style>'
 
 
-# html works    
+# html works 
+
+## 1 page   
 
 
 def generate_metric_card(titel : str, value : float, delta: float, delta_sign : str,  ineverse : bool = False):
@@ -115,7 +117,27 @@ def generate_metric_card(titel : str, value : float, delta: float, delta_sign : 
    except Exception as e:
        erro_logger(e, 'functions/generate_matric_card')
 
- 
+
+
+def generate_total_cards(amount: float = 0.0 , ineverse: bool = True):
+
+    try: 
+        if ineverse == True:
+            background_colour = 'background_positive' if amount > 0 else 'background_negative'
+            font_colour = 'font_positive' if amount > 0 else 'font_negative'
+        else:
+            background_colour = 'background_positive' if amount < 0 else 'background_negative'
+            font_colour = 'font_positive' if amount < 0 else 'font_negative'
+
+        return f'''<section class='{background_colour}'>
+                <p class='element_total_card {font_colour}'>{amount}</p>
+                </section>'''
+    
+    except Exception as e:
+        erro_logger(e, 'functions/generate_total_cards')
+
+            
+
 
 
 # graphics 

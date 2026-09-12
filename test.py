@@ -46,8 +46,10 @@ connection = sq.connect('datas/finance.db')
 
 
 
-for _, line in calculation.un_paid_working_hours().iterrows():
-    print(line)
+# for _, line in calculation.un_paid_working_hours().iterrows():
+#     print(line)
+
+print(sum(calculation.un_paid_working_hours()['salary']))
 
 
 # print(pd.DataFrame())

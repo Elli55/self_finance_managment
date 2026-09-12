@@ -150,11 +150,13 @@ def df_debits_and_unpaid_debits():
     try:
         df_debits = pd.read_sql('SELECT * FROM Debits', connection)
         df_debits_un_paid = pd.read_sql('SELECT * FROM Debits WHERE status = 0', connection)
+        sum_of_debits =sum(df_debits_un_paid['amount'])
     except  Exception as e:
         functions.erro_logger(e, 'calculation/df_debits_and_unpaid_debits')
         df_debits = None
         df_debits_un_paid = pd.DataFrame()
-    return df_debits, df_debits_un_paid
+        sum_of_debits = 0
+    return df_debits, df_debits_un_paid, sum_of_debits
 
 
 # working
@@ -173,9 +175,14 @@ def un_paid_working_hours():
 
                             ''', connection)
 
-        return grouped_by_company
+        sum_of_salary = sum(grouped_by_company['salary'])
+
+        return grouped_by_company, sum_of_salary
 
     except Exception as e:
         functions.erro_logger(e, 'calculation/un_paid_working_hours')
         grouped_by_company = pd.DataFrame()
-        return grouped_by_company
+        sum_of_salary = 0
+        return grouped_by_company, sum_of_salary
+
+

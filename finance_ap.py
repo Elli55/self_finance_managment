@@ -57,8 +57,8 @@ if page == functions.PAGE_NAMES[0]:
     last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
     sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
     last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
-    df_debits, df_unpaid_debits = calculation.df_debits_and_unpaid_debits()
-    df_un_paid_salary = calculation.un_paid_working_hours()
+    df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
+    df_un_paid_salary, sum_of_salary = calculation.un_paid_working_hours()
 
 
 
@@ -165,11 +165,6 @@ if page == functions.PAGE_NAMES[0]:
                     st.rerun()
 
 
-
-
-
-
-
             for _ , row in df_unpaid_debits.iterrows():
 
                 col1, col2, col3, col4 =st.columns(4, gap='xxsmall', )
@@ -180,6 +175,8 @@ if page == functions.PAGE_NAMES[0]:
 
                 if col4.button('Payed', key=f"pay_{row['id']}"):
                         pay_dialog(row)
+
+            st.html(functions.generate_total_cards(sum_of_unpaid_debits, False))
 
 
     st.divider()
@@ -198,7 +195,7 @@ if page == functions.PAGE_NAMES[0]:
         header_for_salary[2].html("<p class='df_headers'>Nominal</p>")
         header_for_salary[3].html("<p class='df_headers'>Salary</p>")
 
-        for _, line in calculation.un_paid_working_hours().iterrows():
+        for _, line in df_un_paid_salary.iterrows():
 
             cols = st.columns(4, gap='xxsmall')
 
@@ -207,6 +204,8 @@ if page == functions.PAGE_NAMES[0]:
             cols[2].html(f"<p class='element_of_df'>{line['nominal']}</p>")
             cols[3].html(f"<p class='element_of_df'>{line['salary']}</p>")
 
+        
+        st.html(functions.generate_total_cards(sum_of_salary))
                 
 
                  
