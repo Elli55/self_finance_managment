@@ -4,34 +4,37 @@ import pandas as pd
 from datetime import datetime
 
 
+connection = functions.get_connection()
+corsor = connection.cursor()
+
+
+# balance
 
 def update_balance():
 
     try:
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
+        sum_of_expenses = pd.read_sql('SELECT SUM(amount) FROM Expenses', connection).iloc[0, 0]
+        sum_of_income = pd.read_sql('SELECT SUM(amount) FROM Income', connection).iloc[0,0]
+        balance =  sum_of_income - sum_of_expenses
 
-            sum_of_expenses = pd.read_sql('SELECT SUM(amount) FROM Expenses', db).iloc[0, 0]
-            sum_of_income = pd.read_sql('SELECT SUM(amount) FROM Income', db).iloc[0,0]
-            balance =  sum_of_income - sum_of_expenses
+        corsor.execute('''
 
-            corsor = db.cursor()
+                    CREATE TABLE IF NOT EXISTS Balance(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    date  TEXT,
+                    balance REAL 
+                    )
 
-            corsor.execute('''
+                    ''')
 
-                        CREATE TABLE IF NOT EXISTS Balance(
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        date  TEXT,
-                        balance REAL 
-                        )
+        corsor.execute('''INSERT INTO Balance(date, balance)
+                            VALUES(?,?)
 
-                        ''')
+                                ''', (functions.DATE_OF_DAY, balance))
 
-            corsor.execute('''INSERT INTO Balance(date, balance)
-                                VALUES(?,?)
+        connection.commit()
 
-                                    ''', (functions.DATE_OF_DAY, balance))
-
-            functions.proces_logger(f'for {functions.DATE_OF_DAY} balance refreshed currrent Balance : {balance}', 'DataWork/update_balance')
+        functions.proces_logger(f'for {functions.DATE_OF_DAY} balance refreshed currrent Balance : {balance}', 'DataWork/update_balance')
 
     except Exception as e:
 
@@ -40,31 +43,28 @@ def update_balance():
 
         
 
+# expenses
 
 def write_expenses(expense, amount, category, date,note):
-    
-
 
     try:
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
-            corsor = db.cursor()
+        corsor.execute('''
+                CREATE TABLE IF NOT EXISTS Expenses(
+                
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    amount REAL,
+                    category TEXT,
+                    date TEXT,
+                    note TEXT)
+                    ''')
 
-            corsor.execute('''
-                    CREATE TABLE IF NOT EXISTS Expenses(
-                    
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT,
-                        amount REAL,
-                        category TEXT,
-                        date TEXT,
-                        note TEXT)
-                        ''')
+        corsor.execute(f'''
 
-            corsor.execute(f'''
-
-                    INSERT INTO Expenses(name, amount,category,  date, note) VALUES(?,?,?,?,?)''',
-                      (expense,amount,category, date, note))
-            
+                INSERT INTO Expenses(name, amount,category,  date, note) VALUES(?,?,?,?,?)''',
+                  (expense,amount,category, date, note))
+        
+        connection.commit()
 
         functions.proces_logger(f'{amount} - {expense} for {functions.DATE_OF_DAY} added to Expenses Table ', 'DataWork/write_expenses' )
     except Exception as e:
@@ -72,42 +72,55 @@ def write_expenses(expense, amount, category, date,note):
 
 
 
-def write_income(source,  amount,date, note):
-
+def delete_expenses(name, date):
 
     try:
+        corsor.execute('''
+                DELETE FROM Expenses WHERE name = ? AND date = ?  
 
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
+                    ''', (name, date))
 
-            corsor = db.cursor()
+        connection.commit()
 
-            corsor.execute('''
-                CREATE TABLE IF NOT EXISTS Income(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                source TEXT,
-                amount REAL,
-                date TEXT,
-                note TEXT)
-                ''')
+        functions.proces_logger(f'Deleted from Expenses {name} in {date}')
 
-            corsor.execute(f'''
+    except Exception as e:
+        functions.erro_logger(e, 'DataWork/delete_expenses')                
 
-                INSERT INTO Income(source,  amount, date,note) VALUES (?,?,?,?)''',
-                  (source,amount,date,note)
 
-                )
+# income 
 
-          
+def write_income(source,  amount,date, note):
 
-            functions.proces_logger(f'{amount} EUR from {source} added to Income Table', 'DataWork/write_income')
+    try:
+        corsor.execute('''
+            CREATE TABLE IF NOT EXISTS Income(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT,
+            amount REAL,
+            date TEXT,
+            note TEXT)
+            ''')
+
+        corsor.execute(f'''
+
+            INSERT INTO Income(source,  amount, date,note) VALUES (?,?,?,?)''',
+              (source,amount,date,note)
+
+            )
+
+        connection.commit()
+
+        functions.proces_logger(f'{amount} EUR from {source} added to Income Table', 'DataWork/write_income')
     except Exception as e:
 
         functions.erro_logger(e, 'DataWork/write_income')            
 
 
+# works 
+
 def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hour):
     try:
-        
         
         fmt = '%H:%M:%S'
         start = datetime.strptime(str(start_time), fmt)
@@ -118,27 +131,28 @@ def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hou
             functions.erro_logger('End time must be after start time', 'DataWork/write_work_hours')
             return
 
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
-            cursor = db.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS WorkHours(
-                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-                    company         TEXT,
-                    date_of_work    TEXT,
-                    start_time      TEXT,
-                    end_time        TEXT,
-                    total_hours     REAL,
-                    salary_per_hour REAL,
-                    payed           INTEGER DEFAULT 0,
-                    date_of_day     TEXT)
-            ''')
-            cursor.execute(
-                '''INSERT INTO WorkHours
-                   (company, date_of_work, start_time, end_time, total_hours, salary_per_hour, payed, date_of_day)
-                   VALUES(?,?,?,?,?,?,0,?)''',
-                (company, str(date_of_work), str(start_time), str(end_time),
-                 total_hours, salary_per_hour, functions.DATE_OF_DAY)
-            )
+        cursor = connection.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS WorkHours(
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                company         TEXT,
+                date_of_work    TEXT,
+                start_time      TEXT,
+                end_time        TEXT,
+                total_hours     REAL,
+                salary_per_hour REAL,
+                payed           INTEGER DEFAULT 0,
+                date_of_day     TEXT)
+        ''')
+        cursor.execute(
+            '''INSERT INTO WorkHours
+               (company, date_of_work, start_time, end_time, total_hours, salary_per_hour, payed, date_of_day)
+               VALUES(?,?,?,?,?,?,0,?)''',
+            (company, str(date_of_work), str(start_time), str(end_time),
+             total_hours, salary_per_hour, functions.DATE_OF_DAY)
+        )
+
+        connection.commit()
 
         functions.proces_logger(
             f'{company} | {date_of_work} | {start_time}-{end_time} | {total_hours}h added',
@@ -151,22 +165,24 @@ def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hou
 
 def payed_from_works(work_place, start_date, end_date):
     try:
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
-            cursor = db.cursor()
-            cursor.execute(
-                '''UPDATE WorkHours SET payed = 1
-                   WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
-                (work_place, str(start_date), str(end_date))
-            )
-            df = pd.read_sql(
-                '''SELECT SUM(total_hours * salary_per_hour) as total
-                   FROM WorkHours
-                   WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
-                db,
-                params=(work_place, str(start_date), str(end_date))
-            )
-            total = float(df.iloc[0][0] or 0)
-            write_income(work_place, total, f'From {work_place}: {start_date} - {end_date}')
+        cursor = connection.cursor()
+        cursor.execute(
+            '''UPDATE WorkHours SET payed = 1
+               WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+            (work_place, str(start_date), str(end_date))
+        )
+        df = pd.read_sql(
+            '''SELECT SUM(total_hours * salary_per_hour) as total
+               FROM WorkHours
+               WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+            connection,
+            params=(work_place, str(start_date), str(end_date))
+        )
+        total = float(df.iloc[0][0] or 0)
+
+        connection.commit()
+
+        write_income(work_place, total, f'From {work_place}: {start_date} - {end_date}')
 
         functions.proces_logger(f'{work_place} | {start_date}-{end_date} paid', 'DataWork/payed_from_works')
 
@@ -174,37 +190,33 @@ def payed_from_works(work_place, start_date, end_date):
         functions.erro_logger(e, 'DataWork/payed_from_works')
 
 
+# debits
 
 def write_debits(name, amount, deadline,date):
 
     try:    
+        corsor.execute('''
 
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
+            CREATE TABLE IF NOT EXISTS Debits(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            amount REAL,
+            deadline TEXT,
+            status INTEGER,
+            added_date TEXT)
 
-            corsor = db.cursor()
+            ''')
 
-            corsor.execute('''
+        corsor.execute(f'''
 
-                CREATE TABLE IF NOT EXISTS Debits(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                amount REAL,
-                deadline TEXT,
-                status INTEGER,
-                added_date TEXT)
+            INSERT INTO Debits(name, amount, deadline, status, added_date)
+            Values(?,?,?,?,?)''',(name, amount,  deadline, 0, date)
 
-                ''')
+            )
 
-            corsor.execute(f'''
+        connection.commit()
 
-                INSERT INTO Debits(name, amount, deadline, status, added_date)
-                Values(?,?,?,?,?)''',(name, amount,  deadline, 0, date)
-
-                )
-
-            
-
-            functions.proces_logger(f'For {name} {amount} EUR added to Debits Table ','DataWork/write_debits' )
+        functions.proces_logger(f'For {name} {amount} EUR added to Debits Table ','DataWork/write_debits' )
 
     except Exception as e:
         functions.erro_logger(e, 'DataWork/write_debits')
@@ -213,20 +225,16 @@ def write_debits(name, amount, deadline,date):
 def change_debit_status(iid):
 
     try:
-        with sq.connect('datas/finance.db', check_same_thread=False) as db:
+        corsor.execute('''
 
-            corsor = db.cursor()
+                UPDATE Debits
+                SET status = 1
+                WHERE id = ? 
 
-            corsor.execute('''
+                ''', (iid,))
 
-                    UPDATE Debits
-                    SET status = 1
-                    WHERE id = ? 
-
-                    ''', (iid,))
-            
-            functions.proces_logger(f'for {iid} of debit status changed', 'functions/change_debit_status')
+        connection.commit()
+        
+        functions.proces_logger(f'for {iid} of debit status changed', 'functions/change_debit_status')
     except Exception as e:
-        functions.erro_logger(e, 'functions/change_debit_status')            
-
-
+        functions.erro_logger(e, 'functions/change_debit_status')

@@ -35,7 +35,7 @@ def calculate_last_month_balance_and_delta_for_balance():
 
                         ''', connection)
 
-        last_month_balance = df_last_month_balance['avg_balance'].iloc[0].round(2) if not df_last_month_balance.empty else 0
+        last_month_balance = round(df_last_month_balance['avg_balance'].iloc[0], 2) if not df_last_month_balance.empty else 0
 
         delta_for_balance = round((last_month_balance - calculate_current_balance()) / last_month_balance * 100, 2)
 

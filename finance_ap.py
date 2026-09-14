@@ -340,5 +340,9 @@ if page == functions.PAGE_NAMES[1]:
 
 
 
+    st.divider()
+
+    
+
 
 
