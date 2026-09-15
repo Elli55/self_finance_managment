@@ -114,7 +114,25 @@ def write_income(source,  amount,date, note):
         functions.proces_logger(f'{amount} EUR from {source} added to Income Table', 'DataWork/write_income')
     except Exception as e:
 
-        functions.erro_logger(e, 'DataWork/write_income')            
+        functions.erro_logger(e, 'DataWork/write_income')   
+
+
+def delete_income(name, date):
+
+    try:
+        corsor.execute('''
+
+                DELETE FROM Income WHERE name = ? AND date = ?
+
+                ''', (name, date))
+
+        connection.commit()
+
+        functions.proces_logger(f'{name} - {date} from Income deleted ')
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/delete_income')
+
 
 
 # works 

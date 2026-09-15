@@ -37,7 +37,7 @@ def calculate_last_month_balance_and_delta_for_balance():
 
         last_month_balance = round(df_last_month_balance['avg_balance'].iloc[0], 2) if not df_last_month_balance.empty else 0
 
-        delta_for_balance = round((last_month_balance - calculate_current_balance()) / last_month_balance * 100, 2)
+        delta_for_balance = (last_month_balance - calculate_current_balance()) / last_month_balance * 100
 
     except Exception as e:
         functions.erro_logger(e, 'calculation/calculate_last_month_balance_and_delta_of_balance')
@@ -104,11 +104,13 @@ def sum_month_expenses(month):
 
 # income
 
+def load_income_df():
+
+    return pd.read_sql('SELECT * FROM Income', connection)
+
 def calculate_sum_of_this_month_income():
 
     try:
-
-        df_income = pd.read_sql('SELECT * FROM Income', connection)
 
         sum_this_month_income = pd.read_sql('''SELECT SUM(amount) FROM Income
                                             WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ''', connection).iloc[0,0]

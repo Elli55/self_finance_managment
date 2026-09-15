@@ -22,6 +22,18 @@ try:
 except Exception as e:
     functions.erro_logger(e, 'finance_ap.py/start')        
 
+# global variabels
+
+BALANCE = calculation.calculate_current_balance()
+DF_EXPENSES = calculation.load_expenses_df()
+DF_INCOME = calculation.load_income_df()
+last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
+sum_this_month_income = calculation.calculate_sum_of_this_month_income()
+last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
+sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
+last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
+df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
+df_un_paid_salary, sum_of_salary = calculation.un_paid_working_hours()
 
 
 
@@ -50,22 +62,6 @@ if page == functions.PAGE_NAMES[0]:
 
     write_month_debits.write_returned_debits()
 
-
-    BALANCE = calculation.calculate_current_balance()
-    last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
-    sum_this_month_income = calculation.calculate_sum_of_this_month_income()
-    last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
-    sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
-    last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
-    df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
-    df_un_paid_salary, sum_of_salary = calculation.un_paid_working_hours()
-
-
-
-
-
-
-
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
 
@@ -73,7 +69,7 @@ if page == functions.PAGE_NAMES[0]:
 
         st.markdown(functions.generate_metric_card('Balance',
                                                     BALANCE,
-                                                      delta_for_balance,
+                                                      round(delta_for_balance,2),
                                                       '%',
                                                       False),
                                                           unsafe_allow_html=True)
@@ -206,7 +202,12 @@ if page == functions.PAGE_NAMES[0]:
 
         
         st.html(functions.generate_total_cards(sum_of_salary))
-                
+
+    st.divider()
+
+
+
+            
 
                  
                     
@@ -342,7 +343,60 @@ if page == functions.PAGE_NAMES[1]:
 
     st.divider()
 
-    
+    st.html("<h1 class='subtitle'> Last 10 Expenses List</h1>")
+
+
+    with st.container():
+
+        head_of_expense_list = st.columns([3,3,3,3,2])
+
+        head_of_expense_list[0].html("<p class='df_headers'>Name</p>")
+        head_of_expense_list[1].html("<p class='df_headers'>Amount</p>")
+        head_of_expense_list[2].html("<p class='df_headers'>Date</p>")
+        head_of_expense_list[3].html("<p class='df_headers'>Note</p>")
+        head_of_expense_list[4].html("<p class='df_headers'>Delete?</p>")
+
+        for _, line in DF_EXPENSES.tail(10).iloc[::-1].iterrows():
+
+            colums = st.columns([3,3,3,3,2])
+
+            colums[0].html(f"<p class='element_of_df'>{line['name']}</p>")
+            colums[1].html(f"<p class='element_of_df'>{line['amount']}</p>")
+            colums[2].html(f"<p class='element_of_df'>{line['date']}</p>")
+            colums[3].html(f"<p class='element_of_df'>{line['note']}</p>")
+
+            if colums[4].button('Delete', key=f'expense_{line['id']}'):
+                DataWork.delete_expenses(line['name'], line['date'])
+                st.success(f'{line['name']} in {line['date']} deleted')
+
+    st.divider()
+
+    st.html("<h1 class='subtitle'> Last 10 Income List</h1>")
+
+    with st.container():
+
+        head_of_income_list = st.columns([3,3,3,3,2])
+
+        head_of_income_list[0].html("<p class='df_headers'>Source</p>")
+        head_of_income_list[1].html("<p class='df_headers'>Amount</p>")
+        head_of_income_list[2].html("<p class='df_headers'>Date</p>")
+        head_of_income_list[3].html("<p class='df_headers'>Note</p>")
+        head_of_income_list[4].html("<p class='df_headers'>Delete?</p>")
+
+
+
+        for _, line in calculation.load_income_df().tail(10).iloc[::-1].iterrows():
+
+            colums = st.columns([3,3,3,3,2])
+
+            colums[0].html(f"<p class='element_of_df'>{line['source']}</p>")
+            colums[1].html(f"<p class='element_of_df'>{line['amount']}</p>")
+            colums[2].html(f"<p class='element_of_df'>{line['date']}</p>")
+            colums[3].html(f"<p class='element_of_df'>{line['note']}</p>")
+
+            if colums[4].button('Delete', key=f'key_{line['id']}'):
+                DataWork.delete_income(line['name'], line['date'])
+                st.success(f'{line['name']} in {line['date']} deleted')
 
 
 
