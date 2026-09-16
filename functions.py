@@ -13,6 +13,7 @@ Path('system').mkdir(exist_ok=True)
 
 import streamlit as st
 
+
 @st.cache_resource
 def get_connection():
     return sq.connect('datas/finance.db', check_same_thread=False)
@@ -56,8 +57,9 @@ DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
 
 PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
 
-CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette', 'Rent','Education','Gift',
-                        'Debitor','Invest', 'Cleaning', 'Maintenace Staff','Travel', 'Family']
+CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
+                         'Rent','Clothes','Education','Gift','Debitor','Invest',
+                         'Cleaning', 'Maintenace Staff','Travel', 'Family']
 
 
 INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
@@ -156,7 +158,8 @@ CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 150, 'limit':300},
                         'Gift':{'low':20, 'limit':100},
                         'Rent':{'low':250, 'limit':500},
                         'Invest':{'low':100, 'limit':500},
-                        'Food Out Side':{'low':100, 'limit':200}}
+                        'Food Out Side':{'low':100, 'limit':200},
+                        'Clothes':{'low':10, 'limit':50}}
 
 def get_category_colour(category, amount):
 
@@ -177,7 +180,7 @@ def get_category_colour(category, amount):
     return colour    
 
 
-# for debits
+
 
 
 
