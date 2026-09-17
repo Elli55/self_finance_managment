@@ -66,5 +66,15 @@ connection = sq.connect('datas/finance.db')
 
 
 
-for _, line in calculation.load_expenses_df().tail(10).iloc[::-1].iterrows():
-    print(line['name'])
+# for _, line in calculation.load_expenses_df().tail(10).iloc[::-1].iterrows():
+#     print(line['name'])
+
+df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+
+total_chek = 0
+for _, line in df_work_hours.iterrows():
+
+    if line['company'] == 'BrinkGeherMeyer':
+        total_chek += line['total_hours']
+
+print(total_chek) 
