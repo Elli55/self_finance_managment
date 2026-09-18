@@ -134,7 +134,7 @@ def calculate_last_month_income_and_delta():
                                         ''', connection)
 
 
-        last_month_income = df_last_month_income['total'].iloc[0].round(2) if not df_last_month_income.empty else 0
+        last_month_income = round(df_last_month_income['total'].iloc[0], 2) if not df_last_month_income.empty else 0
 
         delta_for_income = round((last_month_income - calculate_sum_of_this_month_income()) / last_month_income * 100, 2)
     except Exception as e:
@@ -163,9 +163,18 @@ def df_debits_and_unpaid_debits():
 
 # working
 
-df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+
 
 def un_paid_working_hours():
+
+    df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+
+    for _, line in df_work_hours.iterrows():
+
+      if line['company'] == '':
+          print()  
+
+    
 
     try:
 

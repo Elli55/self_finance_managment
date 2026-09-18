@@ -69,12 +69,51 @@ connection = sq.connect('datas/finance.db')
 # for _, line in calculation.load_expenses_df().tail(10).iloc[::-1].iterrows():
 #     print(line['name'])
 
-df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+# df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
 
-total_chek = 0
-for _, line in df_work_hours.iterrows():
+# total_chek = 0
+# for _, line in df_work_hours.iterrows():
 
-    if line['company'] == 'BrinkGeherMeyer':
-        total_chek += line['total_hours']
+#     if line['company'] == 'BrinkGeherMeyer':
+#         total_chek += line['total_hours']
 
-print(total_chek) 
+# print(total_chek) 
+
+
+def un_paid_working_hours():
+
+    df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+
+    work_hours = {'BrinkGeherMeyer':{'workhours':0, 'nominal':13}}
+
+    for _, line in df_work_hours.iterrows():
+
+      if line['company'] == 'BrinkGeherMeyer':
+         work_hours['BrinkGeherMeyer'] += line['total_hours']
+
+      else:
+        try:
+         
+            grouped_by_company = pd.read_sql('''
+         
+                SELECT company, SUM(total_hours * salary_per_hour)  as salary, SUM(total_hours) as hours, salary_per_hour as nominal  FROM WorkHours
+                WHERE payed = 0
+                GROUP BY company
+                ''', connection)
+         
+            sum_of_salary = sum(grouped_by_company['salary'])
+         
+            return grouped_by_company, sum_of_salary
+         
+        except Exception as e:
+                functions.erro_logger(e, 'calculation/un_paid_working_hours')
+                grouped_by_company = pd.DataFrame()
+                sum_of_salary = 0
+                return grouped_by_company, sum_of_salary   
+          
+
+
+# def salary_for_brinkgehermeyer(month):
+
+
+print(datetime.datetime.month.setter('September'))
