@@ -208,6 +208,34 @@ def payed_from_works(work_place, start_date, end_date):
         functions.erro_logger(e, 'DataWork/payed_from_works')
 
 
+def over_times_per_work(company, hours, nominal, month):
+
+    try:
+        corsor = connection.cursor()
+
+        corsor.execute(
+            '''
+                CREATE TABLE IF NOT EXISTS OverTimes(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company TEXT,
+                hours REAL,
+                nominal REAL,
+                month TEXT)
+            '''
+        )        
+
+        corsor.execute('''
+
+            INSERT INTO OverTimes
+            VALUES(?,?,?,?)
+
+            ''', (company, hours, nominal, month))
+
+        connection.commit()
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/over_time_per_work')    
+
 # debits
 
 def write_debits(name, amount, deadline,date):

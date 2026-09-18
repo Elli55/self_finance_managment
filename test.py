@@ -5,7 +5,8 @@ import calculation
 import functions
 import DataWork
 
-connection = sq.connect('datas/finance.db')
+connection = functions.connection
+
 
 
 # df_expenses = pd.read_sql('SELECT * FROM Debits', connection)
@@ -113,7 +114,33 @@ def un_paid_working_hours():
           
 
 
-# def salary_for_brinkgehermeyer(month):
+def fix_monthly_salary_from_companies(company,month, salary_hours):
+
+    df__monthly = pd.read_sql('''SELECT * FROM WorkHours
+                                WHERE company = ?
+                                AND strftime('%m.%Y', date_of_work) = ?  ''',
+                                connection, params=(company, month))
+
+    working_hours = 0
+    
+    for _, line in df__monthly.iterrows():
+
+        working_hours += line['total_hours']
+
+    print(working_hours)
+
+        
 
 
-print(datetime.datetime.month.setter('September'))
+
+fix_monthly_salary_from_companies('BrinkGeherMeyer', '09.2026', 0)    
+
+    
+
+
+    
+
+
+
+
+# print(datetime.datetime.month.setter('September'))
