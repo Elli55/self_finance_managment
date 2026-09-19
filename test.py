@@ -84,16 +84,7 @@ connection = functions.connection
 def un_paid_working_hours():
 
     df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
-
-    work_hours = {'BrinkGeherMeyer':{'workhours':0, 'nominal':13}}
-
-    for _, line in df_work_hours.iterrows():
-
-      if line['company'] == 'BrinkGeherMeyer':
-         work_hours['BrinkGeherMeyer'] += line['total_hours']
-
-      else:
-        try:
+    try:
          
             grouped_by_company = pd.read_sql('''
          
@@ -106,7 +97,7 @@ def un_paid_working_hours():
          
             return grouped_by_company, sum_of_salary
          
-        except Exception as e:
+    except Exception as e:
                 functions.erro_logger(e, 'calculation/un_paid_working_hours')
                 grouped_by_company = pd.DataFrame()
                 sum_of_salary = 0
@@ -114,12 +105,14 @@ def un_paid_working_hours():
           
 
 
-def fix_monthly_salary_from_companies(company,month, salary_hours):
+def calculate_fix_monthly_salary_from_companies(company,month, salary_hours, nominal):
 
     df__monthly = pd.read_sql('''SELECT * FROM WorkHours
                                 WHERE company = ?
                                 AND strftime('%m.%Y', date_of_work) = ?  ''',
                                 connection, params=(company, month))
+
+    
 
     working_hours = 0
     
@@ -127,15 +120,36 @@ def fix_monthly_salary_from_companies(company,month, salary_hours):
 
         working_hours += line['total_hours']
 
-    print(working_hours)
+    print('Total hours ', working_hours)
+
+    if working_hours > salary_hours:
+
+        DataWork.over_times_per_work(company, working_hours-salary_hours, nominal, month )
+        print('Over time wroted')
+
+    
 
         
 
 
 
-fix_monthly_salary_from_companies('BrinkGeherMeyer', '09.2026', 0)    
+calculate_fix_monthly_salary_from_companies('BrinkGeherMeyer', '09.2026', 20,13)    
 
     
+
+
+
+df_over_time = pd.read_sql('''SELECT * FROM OverTimes''', connection)
+
+print(df_over_time)
+
+
+# df__monthly = pd.read_sql('''SELECT * FROM WorkHours
+#                                 WHERE company = ?
+#                                 AND strftime('%m.%Y', date_of_work) = ?  ''',
+#                                 connection, params=('BrinkGeherMeyer', '09.2026'))
+
+# print(df__monthly.head())
 
 
     

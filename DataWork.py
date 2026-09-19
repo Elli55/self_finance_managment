@@ -211,9 +211,11 @@ def payed_from_works(work_place, start_date, end_date):
 def over_times_per_work(company, hours, nominal, month):
 
     try:
+
         corsor = connection.cursor()
 
         corsor.execute(
+
             '''
                 CREATE TABLE IF NOT EXISTS OverTimes(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -221,12 +223,13 @@ def over_times_per_work(company, hours, nominal, month):
                 hours REAL,
                 nominal REAL,
                 month TEXT)
+
             '''
         )        
 
         corsor.execute('''
 
-            INSERT INTO OverTimes
+            INSERT INTO OverTimes (company, hours, nominal, month)
             VALUES(?,?,?,?)
 
             ''', (company, hours, nominal, month))
