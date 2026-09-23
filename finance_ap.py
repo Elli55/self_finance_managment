@@ -6,6 +6,7 @@ import calculation
 import graphics as gp
 import write_month_debits
 import datetime
+from datetime import datetime as dt
 
 
 
@@ -304,7 +305,7 @@ if page == functions.PAGE_NAMES[1]:
             st.subheader('Write Working Hours')
 
             company_name    = st.selectbox('Company', functions.WORKED_COMPANIES)
-            date_of_work    = st.date_input('Date', value=datetime.date.today())
+            date_of_work    = st.date_input('Date', value=functions.DATE_OF_DAY)
 
             col_t1, col_t2 = st.columns(2)
             with col_t1:
@@ -318,7 +319,7 @@ if page == functions.PAGE_NAMES[1]:
 
             
             if start_time and end_time:
-                from datetime import datetime as dt
+                
                 diff = round(
                     (dt.combine(datetime.date.today(), end_time) -
                     dt.combine(datetime.date.today(), start_time)

@@ -52,6 +52,9 @@ connection = functions.connection
 
 # print(sum(calculation.un_paid_working_hours()['salary']))
 
+df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+print(df_work_hours)
+
 
 # print(pd.DataFrame())
 
@@ -81,51 +84,51 @@ connection = functions.connection
 # print(total_chek) 
 
 
-def un_paid_working_hours():
+# def un_paid_working_hours():
 
-    df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
-    try:
+#     df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+#     try:
          
-            grouped_by_company = pd.read_sql('''
+#             grouped_by_company = pd.read_sql('''
          
-                SELECT company, SUM(total_hours * salary_per_hour)  as salary, SUM(total_hours) as hours, salary_per_hour as nominal  FROM WorkHours
-                WHERE payed = 0
-                GROUP BY company
-                ''', connection)
+#                 SELECT company, SUM(total_hours * salary_per_hour)  as salary, SUM(total_hours) as hours, salary_per_hour as nominal  FROM WorkHours
+#                 WHERE payed = 0
+#                 GROUP BY company
+#                 ''', connection)
          
-            sum_of_salary = sum(grouped_by_company['salary'])
+#             sum_of_salary = sum(grouped_by_company['salary'])
          
-            return grouped_by_company, sum_of_salary
+#             return grouped_by_company, sum_of_salary
          
-    except Exception as e:
-                functions.erro_logger(e, 'calculation/un_paid_working_hours')
-                grouped_by_company = pd.DataFrame()
-                sum_of_salary = 0
-                return grouped_by_company, sum_of_salary   
+#     except Exception as e:
+#                 functions.erro_logger(e, 'calculation/un_paid_working_hours')
+#                 grouped_by_company = pd.DataFrame()
+#                 sum_of_salary = 0
+#                 return grouped_by_company, sum_of_salary   
           
 
 
-def calculate_fix_monthly_salary_from_companies(company,month, salary_hours, nominal):
+# def calculate_fix_monthly_salary_from_companies(company,month, salary_hours, nominal):
 
-    df__monthly = pd.read_sql('''SELECT * FROM WorkHours
-                                WHERE company = ?
-                                AND strftime('%m.%Y', date_of_work) = ?  ''',
-                                connection, params=(company, month))
+#     df__monthly = pd.read_sql('''SELECT * FROM WorkHours
+#                                 WHERE company = ?
+#                                 AND strftime('%m.%Y', date_of_work) = ?  ''',
+#                                 connection, params=(company, month))
 
     
 
-    working_hours = 0
+#     working_hours = 0
     
-    for _, line in df__monthly.iterrows():
+#     for _, line in df__monthly.iterrows():
 
-        working_hours += line['total_hours']
+#         working_hours += line['total_hours']
 
-    print('Total hours ', working_hours)
+#     print('Total hours ', working_hours)
 
-    if working_hours > salary_hours:
+#     if working_hours > salary_hours:
 
-        DataWork.over_times_per_work(company, working_hours-salary_hours, nominal, month )
-        print('Over time wroted')
+#         DataWork.over_times_per_work(company, working_hours-salary_hours, nominal, month )
+#         print('Over time wroted')
 
     
 
@@ -133,15 +136,15 @@ def calculate_fix_monthly_salary_from_companies(company,month, salary_hours, nom
 
 
 
-calculate_fix_monthly_salary_from_companies('BrinkGeherMeyer', '09.2026', 20,13)    
+# calculate_fix_monthly_salary_from_companies('BrinkGeherMeyer', '09.2026', 20,13)    
 
     
 
 
 
-df_over_time = pd.read_sql('''SELECT * FROM OverTimes''', connection)
+# df_over_time = pd.read_sql('''SELECT * FROM OverTimes''', connection)
 
-print(df_over_time)
+# print(df_over_time)
 
 
 # df__monthly = pd.read_sql('''SELECT * FROM WorkHours
@@ -158,3 +161,5 @@ print(df_over_time)
 
 
 # print(datetime.datetime.month.setter('September'))
+
+
