@@ -189,7 +189,7 @@ if page == functions.PAGE_NAMES[0]:
 
         header_for_salary[0].html("<p class='df_headers'>Company</p>")
         header_for_salary[1].html("<p class='df_headers'>Worked Hours</p>")
-        header_for_salary[2].html("<p class='df_headers'>Nominal</p>")
+        header_for_salary[2].html("<p class='df_headers'>Montly Hours</p>")
         header_for_salary[3].html("<p class='df_headers'>Salary</p>")
 
         for _, line in df_un_paid_salary.iterrows():
@@ -198,7 +198,7 @@ if page == functions.PAGE_NAMES[0]:
 
             cols[0].html(f"<p class='element_of_df'>{line['company']}</p>")
             cols[1].html(f"<p class='element_of_df'>{line['hours']}</p>")
-            cols[2].html(f"<p class='element_of_df'>{line['nominal']}</p>")
+            cols[2].html(f"<p class='element_of_df'>{line['montly_hours']}</p>")
             cols[3].html(f"<p class='element_of_df'>{line['salary']}</p>")
 
         
@@ -255,7 +255,7 @@ if page == functions.PAGE_NAMES[1]:
 
             if name_of_income == functions.INCOME_SOURCE[0]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[0]}'):
-                    company = st.selectbox('Company : ', functions.WORKED_COMPANIES)
+                    company = st.selectbox('Company : ', functions.WORKED_COMPANIES.keys())
                     from_when = st.date_input('From when : ', functions.DATE_OF_DAY )
                     to_when = st.date_input('To when : ', functions.DATE_OF_DAY )
                     date_of_pay = st.date_input('paid When: ', functions.DATE_OF_DAY)
@@ -273,7 +273,7 @@ if page == functions.PAGE_NAMES[1]:
 
             elif name_of_income == functions.INCOME_SOURCE[2]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[2]}'):
-                    work_place = st.selectbox('Where : ', functions.WORKED_COMPANIES)
+                    work_place = st.selectbox('Where : ', functions.WORKED_COMPANIES.keys())
                     amoun_of_tip = st.number_input('Amount : ', min_value=0.0, max_value=100000.0, step=1.0)
                     date_of_Tips_taken = st.date_input('Date: ', functions.DATE_OF_DAY)
                     if st.form_submit_button('Write'):
@@ -304,7 +304,7 @@ if page == functions.PAGE_NAMES[1]:
         with st.form('WriteWorkHours'):
             st.subheader('Write Working Hours')
 
-            company_name    = st.selectbox('Company', functions.WORKED_COMPANIES)
+            company_name    = st.selectbox('Company', functions.WORKED_COMPANIES.keys())
             date_of_work    = st.date_input('Date', value=functions.DATE_OF_DAY)
 
             col_t1, col_t2 = st.columns(2)

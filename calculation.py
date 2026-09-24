@@ -168,12 +168,6 @@ def df_debits_and_unpaid_debits():
 def un_paid_working_hours():
 
     df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
-
-    for _, line in df_work_hours.iterrows():
-
-      if line['company'] == '':
-          print()  
-
     
 
     try:

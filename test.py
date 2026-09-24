@@ -7,6 +7,31 @@ import DataWork
 
 connection = functions.connection
 
+corsor = connection.cursor()
+
+# corsor.execute('''
+
+#         UPDATE Workhours SET montly_hours=80 WHERE company='BrinkGeherMeyer'
+
+# ''')
+
+# connection.commit()
+# df_workhours = pd.read_sql('''
+
+#             SELECT * FROM Workhours
+#                 ''', connection)
+# print(df_workhours.head())
+
+
+grouped_by_company = pd.read_sql('''
+
+                    SELECT company, sum(total_hours) as worked_hours, AVG(montly_hours) as montly_hours, AVG(salary_per_hour) as nominal  FROM Workhours WHERE payed = 0 GROUP BY company
+
+                    ''', connection)
+for _ , line in grouped_by_company.iterrows():
+
+    print(line)
+
 
 
 # df_expenses = pd.read_sql('SELECT * FROM Debits', connection)
@@ -52,13 +77,19 @@ connection = functions.connection
 
 # print(sum(calculation.un_paid_working_hours()['salary']))
 
-df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
-print(df_work_hours)
+# df_work_hours = pd.read_sql('SELECT * FROM WorkHours', connection)
+# print(df_work_hours)
 
 
 # print(pd.DataFrame())
 
+# companys = functions.WORKED_COMPANIES.keys()
 
+# print(companys)
+
+# company = 'BrinkGeherMeyer'
+# x = functions.WORKED_COMPANIES.get(f'{company}').get('montly_hours')
+# print(x)
 
 # def nese():
 
