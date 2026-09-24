@@ -32,7 +32,7 @@ for _ , line in grouped_by_company.iterrows():
 
     print(line)
 
-
+sum(grouped_by_company.get('salary'))
 
 # df_expenses = pd.read_sql('SELECT * FROM Debits', connection)
 
