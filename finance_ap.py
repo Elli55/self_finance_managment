@@ -34,7 +34,7 @@ last_month_income, delta_for_income = calculation.calculate_last_month_income_an
 sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
 last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
 df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
-df_un_paid_salary, sum_of_salary = calculation.un_paid_working_hours()
+result_un_paid_salary, total_salary = calculation.un_paid_working_hours()
 
 
 
@@ -181,28 +181,30 @@ if page == functions.PAGE_NAMES[0]:
     st.html("<h1 class='subtitle'> Working Hours List </h1>")
 
 
-    if df_un_paid_salary.empty:
+    if not result_un_paid_salary:
         st.info('No more unpaid working hours')
     else:
 
-        header_for_salary = st.columns(4, gap='xxsmall')
+        header_for_salary = st.columns(5, gap='xxsmall')
 
         header_for_salary[0].html("<p class='df_headers'>Company</p>")
         header_for_salary[1].html("<p class='df_headers'>Worked Hours</p>")
         header_for_salary[2].html("<p class='df_headers'>Montly Hours</p>")
-        header_for_salary[3].html("<p class='df_headers'>Salary</p>")
+        header_for_salary[3].html("<p class='df_headers'>Nominal</p>")
+        header_for_salary[4].html("<p class='df_headers'>Salary</p>")
 
-        for _, line in df_un_paid_salary.iterrows():
+        for item in result_un_paid_salary.items():
 
-            cols = st.columns(4, gap='xxsmall')
+            cols = st.columns(5, gap='xxsmall')
 
-            cols[0].html(f"<p class='element_of_df'>{line['company']}</p>")
-            cols[1].html(f"<p class='element_of_df'>{line['hours']}</p>")
-            cols[2].html(f"<p class='element_of_df'>{line['montly_hours']}</p>")
-            cols[3].html(f"<p class='element_of_df'>{line['salary']}</p>")
+            cols[0].html(f"<p class='element_of_df'>{item[0]}</p>")
+            cols[1].html(f"<p class='element_of_df'>{item[1].get('worked_hours')}</p>")
+            cols[2].html(f"<p class='element_of_df'>{item[1].get('montly_hours')}</p>")
+            cols[3].html(f"<p class='element_of_df'>{item[1].get('nominal')}</p>")
+            cols[4].html(f"<p class='element_of_df'>{item[1].get('salary')}</p>")
 
         
-        st.html(functions.generate_total_cards(sum_of_salary))
+        st.html(functions.generate_total_cards(total_salary))
 
     st.divider()
 

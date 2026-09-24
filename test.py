@@ -23,16 +23,20 @@ corsor = connection.cursor()
 # print(df_workhours.head())
 
 
-grouped_by_company = pd.read_sql('''
+# grouped_by_company = pd.read_sql('''
 
-                    SELECT company, sum(total_hours) as worked_hours, AVG(montly_hours) as montly_hours, AVG(salary_per_hour) as nominal  FROM Workhours WHERE payed = 0 GROUP BY company
+#                     SELECT company, sum(total_hours) as worked_hours,
+#                     AVG(montly_hours) as montly_hours, 
+#                     AVG(salary_per_hour) as nominal  
+#                     FROM Workhours 
+#                     WHERE payed = 0 GROUP BY company
 
-                    ''', connection)
-for _ , line in grouped_by_company.iterrows():
+#                     ''', connection)
+# for _ , line in grouped_by_company.iterrows():
 
-    print(line)
+#     print(line)
 
-sum(grouped_by_company.get('salary'))
+# sum(grouped_by_company.get('salary'))
 
 # df_expenses = pd.read_sql('SELECT * FROM Debits', connection)
 
@@ -194,3 +198,30 @@ sum(grouped_by_company.get('salary'))
 # print(datetime.datetime.month.setter('September'))
 
 
+
+
+grouped_by_company = pd.read_sql('''
+
+                    SELECT company, sum(total_hours) as worked_hours,
+                    AVG(montly_hours) as montly_hours, 
+                    AVG(salary_per_hour) as nominal  
+                    FROM Workhours WHERE payed = 0 
+                    GROUP BY company
+
+                    ''', connection)
+
+result = {}
+
+        
+for _, line in grouped_by_company.iterrows():
+
+    if line['montly_hours'] > 0:
+        result[line.get('company')] = {'worked_hours':line['worked_hours'],
+                                      'montly_hours':line['montly_hours'],
+                                      'nominal':line['nominal'],
+                                      'salary':functions.WORKED_COMPANIES.get(f'{line.get('company')}').get('salary')}
+
+
+for item in result.items():
+    print(item[0], item[1].get('nominal'))
+            

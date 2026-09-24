@@ -64,7 +64,8 @@ CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
 
 INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
 
-WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80}, 'Ruplei':{'montly_hours':100}} 
+WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
+                    'Ruplei':{'montly_hours':100, 'salary':400}} 
 
 DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
 
