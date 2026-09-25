@@ -159,15 +159,18 @@ def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hou
                 end_time        TEXT,
                 total_hours     REAL,
                 salary_per_hour REAL,
+                montly_hours    REAL,
                 payed           INTEGER DEFAULT 0,
                 date_of_day     TEXT)
         ''')
         cursor.execute(
             '''INSERT INTO WorkHours
-               (company, date_of_work, start_time, end_time, total_hours, salary_per_hour, payed, date_of_day)
-               VALUES(?,?,?,?,?,?,0,?)''',
+               (company, date_of_work, start_time, end_time, total_hours, salary_per_hour, montly_hours, payed, date_of_day)
+               VALUES(?,?,?,?,?,?,?,0,?)''',
             (company, str(date_of_work), str(start_time), str(end_time),
-             total_hours, salary_per_hour, functions.DATE_OF_DAY)
+            total_hours, salary_per_hour, 
+            functions.WORKED_COMPANIES.get(f'{company}').get('montly_hours'), 
+            functions.DATE_OF_DAY)
         )
 
         connection.commit()
@@ -184,23 +187,32 @@ def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hou
 def payed_from_works(work_place, start_date, end_date):
     try:
         cursor = connection.cursor()
-        cursor.execute(
-            '''UPDATE WorkHours SET payed = 1
-               WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
-            (work_place, str(start_date), str(end_date))
-        )
+        
         df = pd.read_sql(
-            '''SELECT SUM(total_hours * salary_per_hour) as total
-               FROM WorkHours
+            '''SELECT * FROM WorkHours
                WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
             connection,
             params=(work_place, str(start_date), str(end_date))
         )
-        total = float(df.iloc[0][0] or 0)
+        
+
+        if df['montly_hours'].sum() > 0:
+
+            salary = functions.WORKED_COMPANIES.get(f'{work_place}').get('salary')
+
+        else:
+            salary = df.get('total_hours').sum() * df.get('salary_per_hour').mean()
+        
+
+        cursor.execute(
+                    '''UPDATE WorkHours SET payed = 1
+                       WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+                    (work_place, str(start_date), str(end_date))
+                )
 
         connection.commit()
 
-        write_income(work_place, total, f'From {work_place}: {start_date} - {end_date}')
+        write_income(work_place, salary, f'From {work_place}: {start_date} - {end_date}')
 
         functions.proces_logger(f'{work_place} | {start_date}-{end_date} paid', 'DataWork/payed_from_works')
 
