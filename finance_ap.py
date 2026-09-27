@@ -63,6 +63,54 @@ if page == functions.PAGE_NAMES[0]:
 
     write_month_debits.write_returned_debits()
 
+    calcol1, calcol2 = st.columns([1,3])
+
+    with calcol1:
+        with st.form('WritePlan'):
+
+            st.html("<h1 class='subtitle'> Add Task</h1>")
+
+            titel = st.text_input('Title', placeholder='Brink')
+            category = st.selectbox('Category', functions.PLANNER_CATEGORIES)
+            date = st.date_input('Date', functions.DATE_OF_DAY)
+
+            time_col1, time_col2 = st.columns(2, gap='xxsmall')
+
+            with time_col1:
+                start_time = st.time_input('Start: ', datetime.time(9,0))
+            with time_col2:
+                end_time = st.time_input('End: ', datetime.time(10,0))
+
+            note = st.text_input('Note', value='')
+
+            if st.form_submit_button('Add'):
+
+                if not titel:
+                    st.warning('The title must be written.')
+                elif time_col2 < time_col1:
+                    st.warning('There is an error in the adding of times.') 
+                else:
+                    DataWork.add_plan_element(titel, category, date, start_time, end_time, note)
+                    st.success(f'{titel} added to {date}')
+                    st.rerun()
+
+    with calcol2:
+
+        st.html("<h1 class='subtitle'> Task Board </h1>")
+
+        df_planner = DataWork.df_planner()  
+
+        event = []
+
+
+        for _ , line in df_planner.iterrows():
+            print()
+
+
+
+
+    st.divider()
+    
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
 

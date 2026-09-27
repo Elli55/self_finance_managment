@@ -59,7 +59,18 @@ def delete_from_planner(plan_id):
         functions.erro_logger(e, 'DataWorks/delete_from_planner')
 
 
-        
+
+def df_planner():
+
+    try:
+
+        df_planner = pd.read_sql(''' SELECT * FROM Planner ''')
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/df__planner')    
+        df_planner = pd.DataFrame()
+
+    return df_planner    
+
 
 
 

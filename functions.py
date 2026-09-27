@@ -8,51 +8,6 @@ from pathlib import Path
 import streamlit as st
 
 
-
-
-Path('datas').mkdir(exist_ok=True)
-Path('system').mkdir(exist_ok=True)
-
-
-
-# globals
-
-DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
-
-PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
-
-CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
-                         'Rent','Clothes','Education','Gift','Debitor','Invest',
-                         'Cleaning', 'Maintenace Staff','Travel', 'Family']
-
-
-INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
-
-WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
-                    'Ruplei':{'montly_hours':100, 'salary':400}} 
-
-DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
-
-PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal']
-
-PLANNER_COLOURS = { 
-    'Work':     "#4210cd",
-    'Study':    "#2fb51a",
-    'Task':     '#f0a500',
-    'Sport':    '#665566',
-    'Personal': '#b57f00'
-    }
-
-
-
-
-@st.cache_resource
-def get_connection():
-    return sq.connect('datas/finance.db', check_same_thread=False)
-
-connection = get_connection()
-
-
 # logging
 
 def erro_logger(e, location):
@@ -81,16 +36,78 @@ def proces_logger(mesagge : str, location : str):
 
 
 
+# connections
+
+
+@st.cache_resource
+def get_connection():
+    return sq.connect('datas/finance.db', check_same_thread=False)
+
+connection = get_connection()
 
 
 
+
+Path('datas').mkdir(exist_ok=True)
+Path('system').mkdir(exist_ok=True)
+
+
+
+# globals
+
+DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
+
+PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
+
+CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
+                         'Rent','Clothes','Education','Gift','Debitor','Invest',
+                         'Cleaning', 'Maintenace Staff','Travel', 'Family']
+
+CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 50, 'limit':150},
+                        'Alchohol': {'low': 25, 'limit':60},
+                        'Cigarette':{'low':10, 'limit':30},
+                        'Education': {'low': 300, 'limit':1000},
+                        'Debitor': {'low': 150, 'limit':200},
+                        'Cleaning': {'low': 10, 'limit':50},
+                        'Maintenace Staff': {'low': 20, 'limit':50},
+                        'Family':{'low': 150, 'limit':300},
+                        'Travel':{'low':20, 'limit':100},
+                        'Kreditor':{'low':150, 'limit':500},
+                        'Gift':{'low':20, 'limit':100},
+                        'Rent':{'low':250, 'limit':500},
+                        'Invest':{'low':100, 'limit':500},
+                        'Food Out Side':{'low':50, 'limit':100},
+                        'Clothes':{'low':10, 'limit':50}}
+
+
+INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
 
 try:
 
     LIST_OF_DATES_FOR_EXPENSES = pd.read_sql('''SELECT strftime('%Y-%m', date) as month FROM Expenses ''', connection)['month'].unique().tolist()
 except Exception as e:
     LIST_OF_DATES_FOR_EXPENSES = []
-    erro_logger(e, 'function/list_of_dates_for_expenses')    
+    erro_logger(e, 'function/list_of_dates_for_expenses') 
+
+WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
+                    'Ruplei':{'montly_hours':100, 'salary':400}} 
+
+DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
+
+PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal']
+
+PLANNER_COLOURS = { 
+    'Work':     "#4210cd",
+    'Study':    "#2fb51a",
+    'Task':     '#f0a500',
+    'Sport':    '#665566',
+    'Personal': '#b57f00'
+    }
+
+
+
+
+
 
 
 
@@ -101,9 +118,10 @@ def load_css():
         return f'<style> {f.read()} </style>'
 
 
-# html works 
 
 ## 1 page   
+
+
 
 
 def generate_metric_card(titel : str, value : float, delta: float, delta_sign : str,  ineverse : bool = False):
@@ -162,21 +180,7 @@ def generate_total_cards(amount: float = 0.0 , ineverse: bool = True):
 # graphics 
 
 
-CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 150, 'limit':300},
-                        'Alchohol': {'low': 25, 'limit':100},
-                        'Cigarette':{'low':10, 'limit':30},
-                        'Education': {'low': 300, 'limit':1000},
-                        'Debitor': {'low': 150, 'limit':200},
-                        'Cleaning': {'low': 10, 'limit':50},
-                        'Maintenace Staff': {'low': 20, 'limit':50},
-                        'Family':{'low': 150, 'limit':300},
-                        'Travel':{'low':20, 'limit':100},
-                        'Kreditor':{'low':150, 'limit':500},
-                        'Gift':{'low':20, 'limit':100},
-                        'Rent':{'low':250, 'limit':500},
-                        'Invest':{'low':100, 'limit':500},
-                        'Food Out Side':{'low':100, 'limit':200},
-                        'Clothes':{'low':10, 'limit':50}}
+
 
 def get_category_colour(category, amount):
 
@@ -195,6 +199,7 @@ def get_category_colour(category, amount):
         colour = '#ff0000'    
 
     return colour    
+
 
 
 
