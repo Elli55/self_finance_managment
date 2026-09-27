@@ -8,6 +8,62 @@ connection = functions.get_connection()
 corsor = connection.cursor()
 
 
+
+
+# planner
+
+def add_plan_element(title, category, date, start_time, end_time, note):
+
+    try:
+
+
+        corsor.execute('''
+
+                CREATE TABLE IF NOT EXISTS Planner (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT,
+                category TEXT,
+                date TEXT,
+                start TEXT,
+                end TEXT,
+                note TEXT
+                )
+
+            ''')
+
+        corsor.execute('''
+
+                INSERT INTO Planner (title, category, date, start, end, note)
+                VALUES (?,?,?,?,?)
+
+            ''', (title, category, date, start_time, end_time, note))  
+
+        
+        connection.commit()
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/add_plan_element')
+
+
+def delete_from_planner(plan_id):
+
+    try:
+
+        corsor.execute('''
+
+            DELETE FROM Planner WHERE id=?
+
+            ''', (plan_id,))
+        
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/delete_from_planner')
+
+
+        
+
+
+
+
 # balance
 
 def update_balance():

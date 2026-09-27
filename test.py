@@ -260,3 +260,23 @@ corsor = connection.cursor()
         
 # for _, line in df.iterrows():
 #     print(line)
+
+
+
+import streamlit as st
+from streamlit_calendar import calendar
+
+st.title("Mənim Təqvimlə Planlayıcım")
+
+# Təqvimdə görünəcək hadisələr (events)
+calendar_events = [
+    {"title": "Python Dərsi", "start": "2023-10-27T10:00:00", "end": "2023-10-27T12:00:00"},
+    {"title": "Görüş", "start": "2023-10-28T15:00:00", "end": "2023-10-28T16:00:00"},
+]
+
+# Təqvimi göstər
+state = calendar(events=calendar_events)
+
+# Təqvimdə bir hadisəyə kliklədikdə onu burada göstərə bilərsən
+if state:
+    st.write("Seçilən hadisə:", state)

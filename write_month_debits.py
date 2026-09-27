@@ -7,7 +7,7 @@ import DataWork
 
 RECURRING_DEBITS = [
     {'name': 'Rent',     'amount': 425, 'day': 15},
-    {'name': 'Vodafone', 'amount': 80,  'day': 10},
+    {'name': 'Vodafone', 'amount': 80,  'day': 10}
 ]
 
 

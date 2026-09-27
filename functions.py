@@ -5,13 +5,45 @@ import sqlite3 as sq
 import json
 import datetime
 from pathlib import Path
+import streamlit as st
+
 
 
 
 Path('datas').mkdir(exist_ok=True)
 Path('system').mkdir(exist_ok=True)
 
-import streamlit as st
+
+
+# globals
+
+DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
+
+PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
+
+CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
+                         'Rent','Clothes','Education','Gift','Debitor','Invest',
+                         'Cleaning', 'Maintenace Staff','Travel', 'Family']
+
+
+INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
+
+WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
+                    'Ruplei':{'montly_hours':100, 'salary':400}} 
+
+DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
+
+PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal']
+
+PLANNER_COLOURS = { 
+    'Work':     "#4210cd",
+    'Study':    "#2fb51a",
+    'Task':     '#f0a500',
+    'Sport':    '#665566',
+    'Personal': '#b57f00'
+    }
+
+
 
 
 @st.cache_resource
@@ -51,23 +83,7 @@ def proces_logger(mesagge : str, location : str):
 
 
 
-# globals
 
-DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
-
-PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
-
-CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
-                         'Rent','Clothes','Education','Gift','Debitor','Invest',
-                         'Cleaning', 'Maintenace Staff','Travel', 'Family']
-
-
-INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
-
-WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
-                    'Ruplei':{'montly_hours':100, 'salary':400}} 
-
-DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
 
 try:
 
