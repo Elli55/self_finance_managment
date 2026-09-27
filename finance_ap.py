@@ -151,7 +151,7 @@ if page == functions.PAGE_NAMES[0]:
                 col1, col2 = st.columns(2)
 
                 if col1.button('Paid', type='primary', width='stretch'):
-                    DataWork.write_expenses(line['name'],paid_amout,'Kreditor', f'Paid kreditor for {line['name']}')
+                    DataWork.write_expenses(line['name'],paid_amout,'Kreditor',functions.DATE_OF_DAY, f'Paid kreditor for {line['name']}')
                     DataWork.change_debit_status(line['id'])
                     if rest:
                         DataWork.write_debits(line['name'], rest, line['deadline'])

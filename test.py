@@ -226,12 +226,31 @@ corsor = connection.cursor()
 #     print(item[0], item[1].get('nominal'))
             
 
-df = pd.read_sql(
-            '''SELECT * FROM WorkHours
-               WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
-            connection,
-            params=('BrinkGeherMeyer', '2026-09-01', '2026-09-20')
-        )
+# df = pd.read_sql(
+#             '''SELECT * FROM WorkHours
+#                WHERE company = ? AND DATE(date_of_work) BETWEEN DATE(?) AND DATE(?)''',
+#             connection,
+#             params=(work_place, str(start_date), str(end_date))
+#         )
+        
+
+# if df['montly_hours'] > 0:
+
+#     salary = functions.WORKED_COMPANIES.get(f'{work_place}').get('salary')
+
+# else:
+#     total_hours = 0
+#     nominal = []
+
+#     for _ , line in df.iterrows():
+#         total_hours += line['total_hours']
+#         nominal.append(line['salary_per_hour'])
+
+#     salary = total_hours * (sum(nominal) / len(nominal) if nominal else 0)    
+
+
+        
+
 
 
 # df = pd.read_sql(
@@ -239,5 +258,5 @@ df = pd.read_sql(
 #             connection
 #         )
         
-for _, line in df.iterrows():
-    print(line)
+# for _, line in df.iterrows():
+#     print(line)
