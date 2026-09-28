@@ -263,20 +263,27 @@ corsor = connection.cursor()
 
 
 
-import streamlit as st
-from streamlit_calendar import calendar
+# import streamlit as st
+# from streamlit_calendar import calendar
 
-st.title("Mənim Təqvimlə Planlayıcım")
 
-# Təqvimdə görünəcək hadisələr (events)
-calendar_events = [
-    {"title": "Python Dərsi", "start": "2023-10-27T10:00:00", "end": "2023-10-27T12:00:00"},
-    {"title": "Görüş", "start": "2023-10-28T15:00:00", "end": "2023-10-28T16:00:00"},
-]
+# calendar_events = [
+#     {"title": "Python Dərsi", "start": "2023-10-27T10:00:00", "end": "2023-10-27T12:00:00"},
+#     {"title": "Görüş", "start": "2023-10-28T15:00:00", "end": "2023-10-28T16:00:00"},
+# ]
 
-# Təqvimi göstər
-state = calendar(events=calendar_events)
 
-# Təqvimdə bir hadisəyə kliklədikdə onu burada göstərə bilərsən
-if state:
-    st.write("Seçilən hadisə:", state)
+# state = calendar(events=calendar_events)
+
+
+# if state:
+#     st.write("Seçilən hadisə:", state)
+
+
+
+df = DataWork.df_planner()
+
+print(df)
+
+for i, linj in df.iterrows():
+    print(linj)

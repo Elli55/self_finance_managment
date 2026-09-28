@@ -57,7 +57,7 @@ Path('system').mkdir(exist_ok=True)
 
 DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
 
-PAGE_NAMES = ['Dayly Dashboard', 'Data Entery', 'Math']
+PAGE_NAMES = ['Dayly Dashboard', 'Finance', 'Data Entery', 'Math']
 
 CATEGORY_FOR_EXPENSES = ['Food', 'Food Out Side','Alchohol', 'Cigarette',
                          'Rent','Clothes','Education','Gift','Debitor','Invest',

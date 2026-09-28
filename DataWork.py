@@ -34,9 +34,9 @@ def add_plan_element(title, category, date, start_time, end_time, note):
         corsor.execute('''
 
                 INSERT INTO Planner (title, category, date, start, end, note)
-                VALUES (?,?,?,?,?)
+                VALUES (?,?,?,?,?,?)
 
-            ''', (title, category, date, start_time, end_time, note))  
+            ''', (title, category, str(date), str(start_time), str(end_time), note)) 
 
         
         connection.commit()
@@ -54,6 +54,7 @@ def delete_from_planner(plan_id):
             DELETE FROM Planner WHERE id=?
 
             ''', (plan_id,))
+        connection.commit()
         
     except Exception as e:
         functions.erro_logger(e, 'DataWorks/delete_from_planner')
@@ -64,7 +65,7 @@ def df_planner():
 
     try:
 
-        df_planner = pd.read_sql(''' SELECT * FROM Planner ''')
+        df_planner = pd.read_sql(''' SELECT * FROM Planner ''', connection)
     except Exception as e:
         functions.erro_logger(e, 'DataWorks/df__planner')    
         df_planner = pd.DataFrame()

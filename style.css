@@ -67,3 +67,14 @@
     font-weight: 700;
 
 }
+
+
+
+
+
+/* FullCalendar  */
+.fc-event-title {
+    white-space: pre-line !important;
+    word-break: break-word;
+    line-height: 1.3;
+}

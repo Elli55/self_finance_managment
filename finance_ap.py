@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_calendar import calendar
 import pandas as pd
 import functions
 import DataWork
@@ -12,7 +13,7 @@ from datetime import datetime as dt
 
 try:
 
-    st.set_page_config(page_title='Finance Tracker', page_icon='💵', layout='wide')
+    st.set_page_config(page_title='My Space', page_icon='🏃‍♂️‍➡️', layout='wide')
 
     st.markdown(functions.load_css(), unsafe_allow_html=True) 
     
@@ -61,7 +62,7 @@ page = st.session_state.page
 if page == functions.PAGE_NAMES[0]:
 
 
-    write_month_debits.write_returned_debits()
+
 
     calcol1, calcol2 = st.columns([1,3])
 
@@ -87,8 +88,8 @@ if page == functions.PAGE_NAMES[0]:
 
                 if not titel:
                     st.warning('The title must be written.')
-                elif time_col2 < time_col1:
-                    st.warning('There is an error in the adding of times.') 
+                elif start_time >= end_time:
+                    st.warning('There is an error in the adding of times.')
                 else:
                     DataWork.add_plan_element(titel, category, date, start_time, end_time, note)
                     st.success(f'{titel} added to {date}')
@@ -100,16 +101,88 @@ if page == functions.PAGE_NAMES[0]:
 
         df_planner = DataWork.df_planner()  
 
-        event = []
+        events = []
 
 
         for _ , line in df_planner.iterrows():
-            print()
+            events.append({
+                'id': str(line['id']),
+                'title': f"{line['title']}\n{str(line['start'])[:5]}–{str(line['end'])[:5]}",                'start': str(line['date']),
+                'color': functions.PLANNER_COLOURS.get(line['category'], '#888888'),
+                'extendedProps': {
+                    'Category': str(line['category']),
+                    'Note': str(line['note']),
+                    'Start': str(line['start']),
+                    'End': str(line['end']),
+                    'db_id': int(line['id'])
+
+                }
+            })
+
+
+        calendar_options = {
+            'editable':         False,
+            'selectable':       True,
+            'initialView':      'dayGridWeek',
+            'displayEventTime': False,
+            'firstDay':         1,
+            'headerToolbar': {
+                'left':   'today prev,next',
+                'center': 'title',
+                'right':  'dayGridMonth,dayGridWeek,listWeek'
+            },
+
+            'height': 550
+        }   
+
+        state = calendar(
+            events=events,
+            options=calendar_options,
+            key='planner_calendar'
+        )
+
+        
+
+        if state.get('eventClick'):
+            event    = state['eventClick']['event']
+            props = event.get('extendedProps', {})
+            raw   = event.get('title', '')
+
+            with st.container(border=True):
+                col_info, col_del = st.columns([4, 1])
+                with col_info:
+                    st.html(f"<h1 class='subtitle'> {raw} </h1>")
+                    st.caption(f"{str(props.get('Start',''))[:5]} – {str(props.get('End',''))[:5]}")
+                    st.caption(props.get('Category', '—'))
+                    if props.get('Note') and props.get('Note') not in ('', 'None'):
+                        st.caption(props.get('Note'))
+                with col_del:
+                    if st.button('Delete', key='del_plan', type='secondary', use_container_width=True):
+                        DataWork.delete_from_planner(props['db_id'])
+                        st.rerun()
+
 
 
 
 
     st.divider()
+
+    
+
+
+
+            
+
+                 
+                    
+
+
+
+
+
+if page == functions.PAGE_NAMES[1]:
+
+    write_month_debits.write_returned_debits()
     
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
@@ -256,21 +329,9 @@ if page == functions.PAGE_NAMES[0]:
 
     st.divider()
 
-
-
-            
-
-                 
-                    
-
-
-
-
-
-if page == functions.PAGE_NAMES[1]:
-
   
 
+if page == functions.PAGE_NAMES[2]:
         
 
     st.subheader('Input Area')
@@ -446,8 +507,8 @@ if page == functions.PAGE_NAMES[1]:
             colums[3].html(f"<p class='element_of_df'>{line['note']}</p>")
 
             if colums[4].button('Delete', key=f'key_{line['id']}'):
-                DataWork.delete_income(line['name'], line['date'])
-                st.success(f'{line['name']} in {line['date']} deleted')
+                DataWork.delete_income(line['source'], line['date'])
+                st.success(f'{line['source']} in {line['date']} deleted')
 
 
 
