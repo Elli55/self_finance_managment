@@ -124,6 +124,7 @@ if page == functions.PAGE_NAMES[0]:
             'editable':         False,
             'selectable':       True,
             'initialView':      'dayGridWeek',
+            'eventDisplay':     'block',
             'displayEventTime': False,
             'firstDay':         1,
             'headerToolbar': {
@@ -135,9 +136,26 @@ if page == functions.PAGE_NAMES[0]:
             'height': 550
         }   
 
+        calendar_css = """
+                    .fc-event-title {
+                        white-space: pre-line !important;   
+                        word-break: break-word;
+                        overflow: visible !important;
+                        text-overflow: clip !important;
+                        line-height: 1.3;
+                    }
+                    .fc-daygrid-event,
+                    .fc-event-main,
+                    .fc-event-title-container {
+                        white-space: normal !important;
+                        overflow: visible !important;
+                    }
+                """
+
         state = calendar(
             events=events,
             options=calendar_options,
+            custom_css=calendar_css,
             key='planner_calendar'
         )
 
