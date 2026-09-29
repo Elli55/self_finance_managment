@@ -73,6 +73,34 @@ def df_planner():
     return df_planner    
 
 
+# habits
+
+def add_habbit(habit, day):
+
+    try:
+        corsor.execute('''
+
+            CREATE TABEL IF NOT EXISTS Habits(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            date TEXT,
+            done INTEGER DEFAULT 0
+            )
+
+            ''')
+        
+        corsor.execute('''
+
+            INSERT INTO Habits (name. date)
+            VALUES (?,?)
+
+            ''', (habit, day))
+
+        connection.commit()
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWorks/add_habit')
+
 
 
 

@@ -94,14 +94,15 @@ WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750},
 
 DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
 
-PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal']
+PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal', 'Fun']
 
 PLANNER_COLOURS = { 
     'Work':     "#4210cd",
     'Study':    "#0f3808",
     'Task':     '#f0a500',
     'Sport':    '#665566',
-    'Personal': '#b57f00'
+    'Personal': '#b57f00', 
+    'Fun':      "#551068"
     }
 
 
