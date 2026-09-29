@@ -98,13 +98,14 @@ PLANNER_CATEGORIES = ['Work', 'Study', 'Task', 'Personal']
 
 PLANNER_COLOURS = { 
     'Work':     "#4210cd",
-    'Study':    "#2fb51a",
+    'Study':    "#0f3808",
     'Task':     '#f0a500',
     'Sport':    '#665566',
     'Personal': '#b57f00'
     }
 
 
+HABITS = ['Sport', 'Reading', 'Math']
 
 
 

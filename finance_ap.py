@@ -107,7 +107,9 @@ if page == functions.PAGE_NAMES[0]:
         for _ , line in df_planner.iterrows():
             events.append({
                 'id': str(line['id']),
-                'title': f"{line['title']}\n{str(line['start'])[:5]}–{str(line['end'])[:5]}",                'start': str(line['date']),
+                'title': f"{line['title']}",
+                'start': f"{line['date']}T{str(line['start'])[:5]}",
+                'end':   f"{line['date']}T{str(line['end'])[:5]}",
                 'color': functions.PLANNER_COLOURS.get(line['category'], '#888888'),
                 'extendedProps': {
                     'Category': str(line['category']),
@@ -125,7 +127,10 @@ if page == functions.PAGE_NAMES[0]:
             'selectable':       True,
             'initialView':      'dayGridWeek',
             'eventDisplay':     'block',
-            'displayEventTime': False,
+            'displayEventTime': True,
+            'displayEventEnd':  True,
+            'eventDisplay': 'block',
+            'eventTimeFormat': {'hour': '2-digit', 'minute': '2-digit', 'hour12': False},
             'firstDay':         1,
             'headerToolbar': {
                 'left':   'today prev,next',
@@ -138,18 +143,24 @@ if page == functions.PAGE_NAMES[0]:
 
         calendar_css = """
                     .fc-event-title {
-                        white-space: pre-line !important;   
+                        white-space: pre-line !important; 
+                        font-weight: 700 !important;  
                         word-break: break-word;
                         overflow: visible !important;
                         text-overflow: clip !important;
                         line-height: 1.3;
                     }
+                    .fc-event-time { font-weight: 400 !important; font-size: 11px; }
                     .fc-daygrid-event,
                     .fc-event-main,
                     .fc-event-title-container {
                         white-space: normal !important;
                         overflow: visible !important;
                     }
+                    .fc-event-main-frame { flex-direction: column; }
+                    .fc-daygrid-event { white-space: normal !important; }
+
+                    
                 """
 
         state = calendar(
