@@ -112,6 +112,8 @@ def calculate_sum_of_this_month_income():
 
     try:
 
+        #return pd.read_sql(''''''')
+
         sum_this_month_income = pd.read_sql('''SELECT SUM(amount) FROM Income
                                             WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ''', connection).iloc[0,0]
 

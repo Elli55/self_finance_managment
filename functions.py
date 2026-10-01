@@ -114,6 +114,8 @@ HABITS = ['Sport', 'Reading', 'Math']
 
 
 
+
+
 # css 
 def load_css():
     with open('style.css') as f:
