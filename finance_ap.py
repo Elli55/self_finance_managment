@@ -190,12 +190,12 @@ if page == functions.PAGE_NAMES[0]:
                         DataWork.delete_from_planner(props['db_id'])
                         st.rerun()
 
-
-
-
-
     st.divider()
 
+    with st.container(border=True):
+
+        colums_habits = st.columns([2] + [1]*7 + [1])
+        
     
 
 
@@ -301,7 +301,7 @@ if page == functions.PAGE_NAMES[1]:
                 col1, col2 = st.columns(2)
 
                 if col1.button('Paid', type='primary', width='stretch'):
-                    DataWork.write_expenses(line['name'],paid_amout,'Kreditor',functions.DATE_OF_DAY, f'Paid kreditor for {line['name']}')
+                    DataWork.write_expenses(line['name'],paid_amout,line['name'],functions.DATE_OF_DAY, f'Paid kreditor for {line['name']}')
                     DataWork.change_debit_status(line['id'])
                     if rest:
                         DataWork.write_debits(line['name'], rest, line['deadline'])

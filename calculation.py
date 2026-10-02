@@ -6,7 +6,7 @@ import functions
 connection = functions.connection
 
 
-# balance
+# balances
 def calculate_current_balance():
     try:
         income = pd.read_sql(
@@ -112,16 +112,14 @@ def calculate_sum_of_this_month_income():
 
     try:
 
-        #return pd.read_sql(''''''')
+        return pd.read_sql('''
+        SELECT COALESCE(SUM(amount), 0) FROM Income
+        Where strftime('%Y-%m', date) = strftime('%Y-%m', 'now')''', connection).iloc[0,0]
 
-        sum_this_month_income = pd.read_sql('''SELECT SUM(amount) FROM Income
-                                            WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now') ''', connection).iloc[0,0]
 
     except Exception as e:
-        functions.erro_logger(e, 'calculation/calculate_sum_income')
-        sum_this_month_income = 0
-
-    return sum_this_month_income
+        functions.erro_logger(e, 'calculation/calculate_sum_of__this_month_income')
+        return 0
 
 
 def calculate_last_month_income_and_delta():

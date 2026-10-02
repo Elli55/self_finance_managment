@@ -89,7 +89,7 @@ except Exception as e:
     LIST_OF_DATES_FOR_EXPENSES = []
     erro_logger(e, 'function/list_of_dates_for_expenses') 
 
-WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':750}, 
+WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':980}, 
                     'Ruplei':{'montly_hours':100, 'salary':400}} 
 
 DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']

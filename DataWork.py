@@ -218,7 +218,7 @@ def delete_income(name, date):
     try:
         corsor.execute('''
 
-                DELETE FROM Income WHERE name = ? AND date = ?
+                DELETE FROM Income WHERE source = ? AND date = ?
 
                 ''', (name, date))
 
@@ -280,7 +280,7 @@ def write_work_hours(company, date_of_work, start_time, end_time, salary_per_hou
         functions.erro_logger(e, 'DataWork/write_work_hours')
 
 
-def payed_from_works(work_place, start_date, end_date):
+def payed_from_works(work_place, date_of_pay,start_date, end_date):
     try:
         cursor = connection.cursor()
         
@@ -308,7 +308,7 @@ def payed_from_works(work_place, start_date, end_date):
 
         connection.commit()
 
-        write_income(work_place, salary, f'From {work_place}: {start_date} - {end_date}')
+        write_income(work_place, salary, date_of_pay, f'{start_date} - {end_date}')
 
         functions.proces_logger(f'{work_place} | {start_date}-{end_date} paid', 'DataWork/payed_from_works')
 
