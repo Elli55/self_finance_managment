@@ -218,31 +218,27 @@ if page == functions.PAGE_NAMES[1]:
 
     with col1:
 
-        st.markdown(functions.generate_metric_card('Balance',
-                                                    BALANCE,
-                                                      round(delta_for_balance,2),
-                                                      '%',
-                                                      False),
-                                                          unsafe_allow_html=True)
+        st.html(functions.generate_metric_card('Balance', 
+                                                BALANCE, delta_for_balance, 
+                                                last_month_balance,
+                                                higher_is_better=True, 
+                                                last_label='Last month avg'))
 
         
     with col2:
 
-        st.markdown(functions.generate_metric_card('Income',
-                                                    sum_this_month_income,
-                                                      delta_for_income,
-                                                        '%',
-                                                        False), 
-                                                        unsafe_allow_html=True)
+        st.html(functions.generate_metric_card('Income', 
+                                                sum_this_month_income, 
+                                                delta_for_income, last_month_income,
+                                                higher_is_better=True))
 
     with col3:
 
-        st.markdown(functions.generate_metric_card('Expenses',
-                                                   sum_this_month_expenses,
-                                                     delta_for_expenses,
-                                                      '%',
-                                                       True ),
-                                                       unsafe_allow_html=True)
+        st.html(functions.generate_metric_card('Expenses', 
+                                                sum_this_month_expenses, 
+                                                delta_for_expenses, 
+                                                last_month_expenses,
+                                                higher_is_better=False))
 
     st.divider()
 

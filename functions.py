@@ -127,36 +127,25 @@ def load_css():
 
 
 
+def generate_metric_card(title: str, value, delta, last, delta_sign='%',
+                         higher_is_better=True, last_label='Last month'):
 
-def generate_metric_card(titel : str, value : float, delta: float, delta_sign : str,  ineverse : bool = False):
+    if delta is None or delta == 0:
+        arrow, tone, delta_text = '–', 'neutral', '–'
+    else:
+        arrow = '▲' if delta > 0 else '▼'
+        tone = 'positive' if (delta > 0) == higher_is_better else 'negative'
+        delta_text = f'{abs(delta)} {delta_sign}'
 
-   try:
-        
-
-        delta_title = '▼' if delta > 0 else '▲'
-
-        if ineverse is False:
-            background_colour = 'background_positive' if value <= 0 else 'background_negative' 
-            font_colour = 'font_positive' if value <= 0 else 'font_negative' 
-
-        else:
-            
-            background_colour = 'background_positive' if value > 0 else 'background_negative' 
-            font_colour = 'font_positive' if value > 0 else 'font_negative' 
-
-
-        proces_logger(f'for {titel} the metric card generated','functions/generate_metric_card')
+    return f'''<section class='metric_card background_{tone}'>
+        <p class='title_of_matric_card'> {title} </p>
+        <h2 class='value_of_metric_card font_{tone}'> {value} </h2>
+        <p class='delta_of_metric_card'> {arrow} {delta_text} </p>
+        <p class='last_of_metric_card'> {last_label}: {last:,.2f} € </p>
+        </section>'''
 
 
-        return  f'''<section class='metric_card {background_colour}'>
-            <p class='title_of_matric_card'> {titel} </p>
-            <h2 class='value_of_metric_card {font_colour}'> {value} </h2>
-            <p class='delta_of_metric_card'> {delta_title} {delta} {delta_sign} </p>
-            </section>
-            '''    
-        
-   except Exception as e:
-       erro_logger(e, 'functions/generate_matric_card')
+
 
 
 
@@ -181,8 +170,14 @@ def generate_total_cards(amount: float = 0.0 , ineverse: bool = True):
 
 
 
-# graphics 
+## 2 page 
 
+def generate_delta(last, current):
+
+    if not current:
+        return None
+    else:
+        return round((current- last) / abs(last) * 100, 2)
 
 
 
@@ -203,6 +198,7 @@ def get_category_colour(category, amount):
         colour = '#ff0000'    
 
     return colour    
+
 
 
 
