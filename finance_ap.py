@@ -24,18 +24,7 @@ try:
 except Exception as e:
     functions.erro_logger(e, 'finance_ap.py/start')        
 
-# global variabels
 
-BALANCE = calculation.calculate_current_balance()
-DF_EXPENSES = calculation.load_expenses_df()
-DF_INCOME = calculation.load_income_df()
-last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
-sum_this_month_income = calculation.calculate_sum_of_this_month_income()
-last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
-sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
-last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
-df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
-result_un_paid_salary, total_salary = calculation.un_paid_working_hours()
 
 
 
@@ -212,6 +201,18 @@ if page == functions.PAGE_NAMES[0]:
 if page == functions.PAGE_NAMES[1]:
 
     write_month_debits.write_returned_debits()
+    # global variabels
+
+    BALANCE = calculation.calculate_current_balance()
+    DF_EXPENSES = calculation.load_expenses_df()
+    DF_INCOME = calculation.load_income_df()
+    last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
+    sum_this_month_income = calculation.calculate_sum_of_this_month_income()
+    last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
+    sum_this_month_expenses = calculation.calculate_sum_of_this_month_expense()
+    last_month_expenses, delta_for_expenses = calculation.last_month_expenses_and_delta()
+    df_debits, df_unpaid_debits, sum_of_unpaid_debits = calculation.df_debits_and_unpaid_debits()
+    result_un_paid_salary, total_salary = calculation.un_paid_working_hours()
     
     col1, col2, col3 = st.columns(3, gap='xxsmall')
 
