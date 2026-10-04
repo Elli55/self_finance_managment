@@ -204,8 +204,8 @@ if page == functions.PAGE_NAMES[1]:
     # global variabels
 
     BALANCE = calculation.calculate_current_balance()
-    DF_EXPENSES = calculation.load_expenses_df()
-    DF_INCOME = calculation.load_income_df()
+    
+    
     last_month_balance, delta_for_balance = calculation.calculate_last_month_balance_and_delta_for_balance()
     sum_this_month_income = calculation.calculate_sum_of_this_month_income()
     last_month_income, delta_for_income = calculation.calculate_last_month_income_and_delta()
@@ -358,6 +358,10 @@ if page == functions.PAGE_NAMES[1]:
   
 
 if page == functions.PAGE_NAMES[2]:
+
+
+    DF_EXPENSES = calculation.load_expenses_df()
+    DF_INCOME = calculation.load_income_df()
         
 
     st.subheader('Input Area')
@@ -390,7 +394,17 @@ if page == functions.PAGE_NAMES[2]:
             st.subheader('Write Income')
             name_of_income = st.selectbox('Soruce : ', options=functions.INCOME_SOURCE)
 
+
+
             if name_of_income == functions.INCOME_SOURCE[0]:
+                            with st.form(f'WriteIncome{functions.INCOME_SOURCE[2]}'):
+                                work_place = st.selectbox('Where : ', functions.WORKED_COMPANIES.keys())
+                                amoun_of_tip = st.number_input('Amount : ', min_value=0.0, max_value=100000.0, step=1.0)
+                                date_of_Tips_taken = st.date_input('Date: ', functions.DATE_OF_DAY)
+                                if st.form_submit_button('Write'):
+                                    DataWork.write_income(work_place, amoun_of_tip, date_of_Tips_taken,functions.INCOME_SOURCE[2])
+
+            elif name_of_income == functions.INCOME_SOURCE[1]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[0]}'):
                     company = st.selectbox('Company : ', functions.WORKED_COMPANIES.keys())
                     from_when = st.date_input('From when : ', functions.DATE_OF_DAY )
@@ -399,7 +413,7 @@ if page == functions.PAGE_NAMES[2]:
                     if st.form_submit_button('Write'):
                         DataWork.payed_from_works(company, date_of_pay,from_when, to_when)
 
-            elif  name_of_income == functions.INCOME_SOURCE[1]:
+            elif  name_of_income == functions.INCOME_SOURCE[2]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[1]}'):
                     donor = st.selectbox('Soruce :', functions.DONOR_SCHOLLERSHIPS)
                     amount_from_donor = st.number_input('Amount : ', min_value=0.0 , max_value=10000.0, step=1.0)
@@ -408,13 +422,8 @@ if page == functions.PAGE_NAMES[2]:
                         DataWork.write_income(donor, date_of_stipendium,amount_from_donor,functions.INCOME_SOURCE[1])
                         
 
-            elif name_of_income == functions.INCOME_SOURCE[2]:
-                with st.form(f'WriteIncome{functions.INCOME_SOURCE[2]}'):
-                    work_place = st.selectbox('Where : ', functions.WORKED_COMPANIES.keys())
-                    amoun_of_tip = st.number_input('Amount : ', min_value=0.0, max_value=100000.0, step=1.0)
-                    date_of_Tips_taken = st.date_input('Date: ', functions.DATE_OF_DAY)
-                    if st.form_submit_button('Write'):
-                        DataWork.write_income(work_place, amoun_of_tip, date_of_Tips_taken,functions.INCOME_SOURCE[2])
+            
+
             elif name_of_income == functions.INCOME_SOURCE[3]:
                 with st.form(f'WriteIncome{functions.INCOME_SOURCE[3]}'):
                     from_who = st.text_input('From : ', max_chars=50)
@@ -451,7 +460,7 @@ if page == functions.PAGE_NAMES[2]:
                 end_time    = st.time_input('End time',   value=datetime.time(18, 0))
 
             salary_per_hour = st.number_input('Salary per hour (€)',
-                                            value=13.0, min_value=0.0,
+                                            value=14.5, min_value=0.0,
                                             max_value=1000.0, step=0.5)
 
             
@@ -523,7 +532,7 @@ if page == functions.PAGE_NAMES[2]:
 
 
 
-        for _, line in calculation.load_income_df().tail(10).iloc[::-1].iterrows():
+        for _, line in DF_INCOME.tail(10).iloc[::-1].iterrows():
 
             colums = st.columns([3,3,3,3,2])
 

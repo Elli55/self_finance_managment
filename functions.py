@@ -80,7 +80,7 @@ CATEGORY_LIMITS_FOR_EXPENSES = {'Food': {'low': 50, 'limit':150},
                         'Clothes':{'low':10, 'limit':50}}
 
 
-INCOME_SOURCE = ['Work', 'Schollership', 'Tips', 'Kreditor', 'Invest']
+INCOME_SOURCE = ['Tips', 'Work', 'Schollership',  'Kreditor', 'Invest']
 
 try:
 
@@ -90,7 +90,7 @@ except Exception as e:
     erro_logger(e, 'function/list_of_dates_for_expenses') 
 
 WORKED_COMPANIES = {'BrinkGeherMeyer':{'montly_hours':80, 'salary':980}, 
-                    'Ruplei':{'montly_hours':100, 'salary':400}} 
+                    'Rampendahl ':{'montly_hours':0, 'salary':0}} 
 
 DONOR_SCHOLLERSHIPS = ['BaFög', 'IPS']
 
