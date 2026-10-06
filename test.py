@@ -281,9 +281,11 @@ corsor = connection.cursor()
 
 
 
-df = DataWork.df_planner()
+# df = DataWork.df_planner()
 
-print(df)
+# print(df)
 
-for i, linj in df.iterrows():
-    print(linj)
+# for i, linj in df.iterrows():
+#     print(linj)4
+
+print('Day:', functions.DATE_OF_DAY, 'week: ', functions.WEEK_DAYS)

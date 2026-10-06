@@ -102,6 +102,91 @@ def add_habbit(habit, day):
         functions.erro_logger(e, 'DataWorks/add_habit')
 
 
+def create_habits_table():
+
+    try:
+        corsor.execute('''
+
+            CREATE TABLE IF NOT EXISTS Habits(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            date TEXT,
+            done INTEGER DEFAULT 0
+            )
+
+            ''')
+        connection.commit()
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWork/create_habits_table')
+
+
+
+def toggle_habit(habit, day):
+
+    try:
+        corsor.execute('''
+        
+                    CREATE TABLE IF NOT EXISTS Habits(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    date TEXT,
+                    done INTEGER DEFAULT 0
+                    )
+        
+                    ''')
+
+        line = corsor.execute('''SELECT id, done FROM Habits
+                                WHERE name = ? AND date = ?''', (habit, str(day))).fetchone()
+
+        if line is None:
+            corsor.execute('''INSERT INTO Habits (name, date, done)
+                              VALUES (?,?,1)''', (habit, str(day)))
+        else:
+            new_value = 0 if line[1] == 1 else 1
+            corsor.execute('UPDATE Habits SET done = ? WHERE id = ?', (new_value, line[0]))
+
+        connection.commit()
+
+    except Exception as e:
+        functions.erro_logger(e, 'DataWork/toggle_habit')
+
+
+def get_done_days():
+
+    try:
+
+        corsor.execute('''
+
+                CREATE TABLE IF NOT EXISTS Habits(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                date TEXT,
+                done INTEGER DEFAULT 0
+                )
+
+                ''')
+
+        lines = corsor.execute('''
+
+                SELECT name, date FROM Habits
+                WHERE done = 1
+
+                ''').fetchall()
+
+        done_list = dict()
+
+        for name, day in lines:
+            if name not in done_list:
+                done_list[name] = set()
+            done_list[name].add(day)
+
+        return done_list    
+
+    except Exception as e:
+
+        functions.erro_logger(e, 'DataWorks/get_done_days')        
+
 
 
 # balance

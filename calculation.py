@@ -6,6 +6,34 @@ import functions
 connection = functions.connection
 
 
+
+
+#habits 
+
+
+def calculate_monthly_habits():
+
+    try:
+
+        df = pd.read_sql('''
+
+            SELECT name, COUNT(*) AS total FROM Habits
+            WHERE done = 1
+            AND strftime('%Y-%m', date) = strftime('%Y-%m', 'now', 'localtime')
+            GROUP BY name
+
+            ''', connection)
+
+        result = dict(zip(df['name'], df['total']))
+
+        return result
+
+    except Exception as e:
+
+        functions.erro_logger(e, 'calculation/calculate_monthly_habits')
+
+        
+
 # balances
 def calculate_current_balance():
     try:
