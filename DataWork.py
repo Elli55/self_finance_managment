@@ -80,7 +80,7 @@ def add_habbit(habit, day):
     try:
         corsor.execute('''
 
-            CREATE TABEL IF NOT EXISTS Habits(
+            CREATE TABLE IF NOT EXISTS Habits(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             date TEXT,
@@ -91,7 +91,7 @@ def add_habbit(habit, day):
         
         corsor.execute('''
 
-            INSERT INTO Habits (name. date)
+            INSERT INTO Habits (name, date)
             VALUES (?,?)
 
             ''', (habit, day))
