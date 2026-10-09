@@ -288,4 +288,11 @@ corsor = connection.cursor()
 # for i, linj in df.iterrows():
 #     print(linj)4
 
-print('Day:', functions.DATE_OF_DAY, 'week: ', functions.WEEK_DAYS)
+# print('Day:', functions.DATE_OF_DAY, 'week: ', functions.WEEK_DAYS)
+
+# print(functions.TODAY, '  ', functions.MONDAY)
+# print(functions.DATE_OF_DAY)
+
+
+print(functions.TODAY - datetime.timedelta(days=3))
+print(datetime.date.today().weekday())

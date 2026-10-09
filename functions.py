@@ -56,7 +56,13 @@ Path('system').mkdir(exist_ok=True)
 # globals
 
 DATE_OF_DAY = datetime.datetime.today().strftime('%Y-%m-%d')
-WEEK_DAYS = datetime.date.today().weekday()
+TODAY = datetime.date.today()
+WEEK_TODAY = datetime.date.today().weekday()
+MONDAY = TODAY - datetime.timedelta(days=WEEK_TODAY)
+
+
+
+
 
 PAGE_NAMES = ['Dayly Dashboard', 'Finance', 'Data Entery', 'Math']
 

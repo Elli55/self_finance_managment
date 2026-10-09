@@ -183,8 +183,72 @@ if page == functions.PAGE_NAMES[0]:
 
     with st.container(border=True):
 
-        colums_habits = st.columns([2] + [1]*7 + [1])
-        
+        week = []
+
+        for i in range(7):
+            week.append(functions.MONDAY + datetime.timedelta(days=i))
+
+
+
+
+        done_list = DataWork.get_done_days()
+        monthly = calculation.calculate_monthly_habits()
+
+
+
+        colums_habits = ([2] + [1]*8)
+
+        header_of_habits = st.columns(colums_habits)
+
+        header_of_habits[0].caption('Habit')
+
+        for i , day in enumerate(week):
+
+            header_of_habits[i +1].caption(day.strftime("%a %d"))
+
+            if i >= 8:
+                continue
+        header_of_habits[8].caption('This Month') 
+
+        for habit in functions.HABITS:
+
+            content_colm_habit = st.columns(colums_habits)
+
+            content_colm_habit[0].write(habit)
+
+            if habit in done_list:
+                done_day_list = done_list[habit]
+            else:
+                done_day_list = set()
+
+
+            for i , day in enumerate(week):
+
+                st_day = str(day)
+                is_done = st_day in done_day_list
+
+
+                is_done_now = content_colm_habit[i + 1].checkbox(
+                    f'{habit} {st_day}',
+                    value=is_done,
+                    key=f'{habit}_{st_day}',
+                    label_visibility='collapsed'
+                )
+
+                if is_done_now != is_done:
+                    DataWork.toggle_habit(habit, day)
+                    st.rerun()
+
+
+                if habit in monthly:
+                    total = monthly[habit]
+                else:
+                    total = 0
+
+            content_colm_habit[8].caption(f'{total} Days')            
+
+
+
     
 
 
